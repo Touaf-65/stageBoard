@@ -1,0 +1,226 @@
+<div class="container mx-auto px-4 py-6 space-y-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6 rounded-xl bg-background p-4 border border-border/50 shadow-sm">
+
+        <!-- Texte -->
+        <div>
+            <h1 class="text-2xl font-semibold text-foreground">
+                Bonjour Alexandre 👋
+            </h1>
+            <p class="text-sm text-muted-foreground mt-1">
+                Voici un aperçu de votre stage aujourd’hui.
+            </p>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-4">
+
+            <!-- Notification -->
+            <button class="relative p-2 rounded-full hover:bg-muted transition">
+                <svg class="w-6 h-6 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+
+                <!-- Badge -->
+                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                    1
+                </span>
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- Statistics -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+
+        <!-- Card 1 -->
+        <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-muted-foreground">Jours restants</p>
+                    <p class="text-2xl font-bold text-foreground">45</p>
+                    <p class="text-xs text-muted-foreground mt-1">Jusqu’à la fin du stage</p>
+                </div>
+                <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-full">
+                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-muted-foreground">Prochaine échéance</p>
+                    <p class="text-2xl font-bold text-foreground">12 Mai</p>
+                    <p class="text-xs text-yellow-600 mt-1">Dans 5 jours</p>
+                </div>
+                <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-full">
+                    <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-muted-foreground">Échéances</p>
+                    <p class="text-2xl font-bold text-foreground">3</p>
+                    <p class="text-xs text-muted-foreground mt-1">En attente</p>
+                </div>
+                <div class="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-full">
+                    <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-muted-foreground">Statut rapport</p>
+                    <p class="text-2xl font-bold text-foreground">60%</p>
+                    <p class="text-xs text-muted-foreground mt-1">En cours</p>
+                </div>
+                <div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-full">
+                    <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 17v-6h6v6M5 21h14M7 10V6h10v4" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Prochaine échéance + Dernière entrée journal-->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+        <!-- Prochaine échéance -->
+        <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm hover:shadow-md transition">
+
+            <!-- Header -->
+            <div class=" items-center justify-between mb-4">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <p class="text-sm font-medium text-muted-foreground">Prochaine échéance</p>
+                    </div>
+                    <div class="p-1 bg-blue-50 dark:bg-blue-900/20 rounded-full">
+                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="text-lg font-semibold text-foreground mt-1">
+                                Rapport intermédiaire
+                            </h3>
+                            <p class="text-sm text-muted-foreground mt-1">12 Mai 2024</p>
+                        </div>
+
+                        <span
+                            class="text-xs font-medium px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
+                            Dans 5 jours
+                        </span>
+                    </div>
+                    <!-- Description -->
+                    <p class="text-sm text-muted-foreground mb-4">
+                        Remise du rapport intermédiaire avec avancement du projet et difficultés rencontrées.
+                    </p>
+                    <hr class="mb-3">
+
+                    <a href="/dashboard/echeance"
+                        class="text-sm font-medium text-blue-600 hover:underline flex items-center gap-1">
+                        Voir toutes les échéances →
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Dernière entrée journal -->
+        <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm hover:shadow-md transition">
+
+            <!-- Header -->
+            <div class=" items-center justify-between mb-4">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <p class="text-sm font-medium text-muted-foreground">Dernière entrée de journal</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-start mb-4">
+                        <div class="mb-2">
+                            <h3 class="text-lg font-semibold text-foreground mt-1">
+                                Semaine 5 - Développement backend
+                            </h3>
+                            <p class="text-sm text-muted-foreground mt-1">06 Mai 2024</p>
+
+                        </div>
+
+
+                    </div>
+                    <!-- Description -->
+                    <p class="text-sm text-muted-foreground mb-4">
+                        Mise en place de l’API REST et authentification utilisateurs...
+                    </p>
+                    <hr class="mb-3">
+
+                    <a href="/dashboard/journal"
+                        class="text-sm font-medium text-blue-600 hover:underline flex items-center gap-1">
+                        Voir le journal →
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Barre de progression -->
+    <div class="rounded-xl bg-background p-4 border border-border/50 shadow-sm">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-medium text-muted-foreground">
+                Progression globale
+            </h3>
+            <span class="text-sm font-semibold text-foreground">
+                60%
+            </span>
+        </div>
+
+        <hr class="mb-2">
+        <!-- Barre -->
+        <div class="w-full bg-muted rounded-full h-2.5 overflow-hidden">
+            <div class="h-2.5 bg-blue-600 rounded-full transition-all duration-500" style="width: 60%">
+            </div>
+        </div>
+
+    </div>
+
+</div>
