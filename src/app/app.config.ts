@@ -4,7 +4,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideAngularSvgIcon } from 'angular-svg-icon';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { importProvidersFrom } from '@angular/core';
-
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { routes } from './app.routes';

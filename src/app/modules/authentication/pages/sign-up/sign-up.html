@@ -1,61 +1,100 @@
-<form class="my-10 space-y-6">
+<app-notifications></app-notifications>
+<form class="my-10 space-y-6" (ngSubmit)="onSubmit($event)">
   <div class="text-center">
-    <h2 class="mb-1 text-3xl font-semibold text-foreground">Bonjour <span class="text-primary">!</span></h2>
-    <p class="text-sm text-muted-foreground">Entrer vos informations pour créer votre compte</p>
+    <h2 class="mb-1 text-3xl font-semibold text-foreground">Create Account <span class="text-primary">!</span></h2>
+    <p class="text-sm text-muted-foreground">Enter your information to create your account</p>
   </div>
 
   <div class="space-y-3 text-left">
+    <!-- Email Field -->
     <div class="form__group">
-
       <div class="relative">
-        <input type="text" id="email" [ngClass]="{'is__invalid-input':submitted && !email}" class="peer block"
-          placeholder="" />
-        <label for="email"
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
+          [ngClass]="{'is__invalid-input': submitted && !email}"
+          class="peer block"
+          placeholder=""
+        />
+        <label
+          for="email"
           class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
           Email address
         </label>
       </div>
 
       <div *ngIf="submitted && !email" class="is__invalid-error">
-        <div *ngIf="!email">Required field</div>
-        <div *ngIf="!email">Email must be an email address valid</div>
+        <div>Required field</div>
       </div>
     </div>
 
+    <!-- Password Field -->
     <div class="form__group">
-
-      <div *ngIf="submitted && !password" class="is__invalid-error">
+      <div class="relative">
+        <input
+          [type]="passwordTextType ? 'text' : 'password'"
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          [ngClass]="{ 'is__invalid-input': submitted && !password }"
+          class="peer block"
+          placeholder=" "
+        />
+        <label
+          for="password"
+          class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
+          Password
+        </label>
+        <span class="absolute top-2.5 right-5 cursor-pointer text-muted-foreground" (click)="togglePasswordTextType()">
+          <svg-icon
+            [src]="
+              !passwordTextType
+                ? 'assets/icons/heroicons/outline/eye-off.svg'
+                : 'assets/icons/heroicons/outline/eye.svg'
+            "
+            [svgClass]="'h-5 w-5'">
+          </svg-icon>
+        </span>
       </div>
 
-      <div class="space-y-3 text-left">
-        <div class="relative">
-          <input type="password" id="password" class="peer block" placeholder=" " />
-          <label for="password"
-            class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
-            Mot de passe
-          </label>
-          <span class="absolute top-2.5 right-5 cursor-pointer text-muted-foreground">
-            <svg-icon src="assets/icons/heroicons/outline/eye-off.svg" [svgClass]="'h-5 w-5'"> </svg-icon>
-            <svg-icon src="assets/icons/heroicons/outline/eye.svg" [svgClass]="'h-5 w-5 hidden'"> </svg-icon>
-          </span>
-        </div>
-        <div class="grid grid-cols-4 gap-2">
-          <div class="h-1 rounded-sm bg-muted"></div>
-          <div class="h-1 rounded-sm bg-muted"></div>
-          <div class="h-1 rounded-sm bg-muted"></div>
-          <div class="h-1 rounded-sm bg-muted"></div>
-        </div>
-        <span class="text-xs text-muted-foreground">
-          Utilisez 8 caractères ou plus avec une combinaison de lettres, de chiffres et de symboles.
-        </span>
+      <div class="grid grid-cols-4 gap-2 mt-2">
+        <div class="h-1 rounded-sm bg-muted"></div>
+        <div class="h-1 rounded-sm bg-muted"></div>
+        <div class="h-1 rounded-sm bg-muted"></div>
+        <div class="h-1 rounded-sm bg-muted"></div>
+      </div>
+      <span class="text-xs text-muted-foreground">
+        Use 8 or more characters with a combination of letters, numbers and symbols.
+      </span>
 
-        <div class="relative">
-          <input type="password" class="peer block" id="confirm-password" placeholder=" ">
-          <label for="confirm-password"
-            class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
-            Confirmer le mot de passe
-          </label>
-        </div>
+      <div *ngIf="submitted && !password" class="is__invalid-error">
+        <div>Required field</div>
+      </div>
+    </div>
+
+    <!-- Confirm Password Field -->
+    <div class="form__group">
+      <div class="relative">
+        <input
+          type="password"
+          id="confirm-password"
+          [(ngModel)]="confirmPassword"
+          name="confirmPassword"
+          [ngClass]="{ 'is__invalid-input': submitted && !confirmPassword }"
+          class="peer block"
+          placeholder=" "
+        />
+        <label
+          for="confirm-password"
+          class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
+          Confirm password
+        </label>
+      </div>
+
+      <div *ngIf="submitted && !confirmPassword" class="is__invalid-error">
+        <div>Required field</div>
       </div>
     </div>
   </div>
@@ -65,14 +104,24 @@
       <input type="checkbox" id="remember-me">
       <label for="remember-me" class="ml-2 block text-sm text-muted-foreground"> Remember me </label>
     </div>
-    <app-button routerLink="/authentication/forgot-password" impact="none" tone="primary" shape="rounded" size="small">
-      Forgot your password?
+    <app-button routerLink="/auth/sign-in" type="button" impact="none" tone="primary" shape="rounded" size="small">
+      Already have an account?
     </app-button>
   </div>
 
   <div>
-    <app-button full impact="bold" tone="primary" shape="rounded" size="medium">S'inscrire</app-button>
+    <button
+      type="submit"
+      [disabled]="loading"
+      class="w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+    >
+      <span *ngIf="loading" class="mr-2">
+        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </span>
+      {{ loading ? 'Inscription...' : 'Create account' }}
+    </button>
   </div>
-
-
 </form>

@@ -19,19 +19,23 @@ type ButtonProps ={
 })
 export class ButtonComponent implements OnInit{
   @Input()
-  impact :ButtonProps['impact']=('none')
+  impact: ButtonProps['impact'] = 'none';
   @Input()
-  size :ButtonProps['size']=('medium')
+  size: ButtonProps['size'] = 'medium';
   @Input()
-  shape :ButtonProps['shape']=('rounded')
+  shape: ButtonProps['shape'] = 'rounded';
   @Input()
-  tone: ButtonProps['tone']=('primary')
-  _full=false;
+  tone: ButtonProps['tone'] = 'primary';
   @Input()
-  set full(value:boolean | string){
-    this._full= typeof value === 'string' ? value === '' : !!value;
+  type: 'button' | 'submit' | 'reset' = 'button';
+  @Input()
+  disabled = false;
+  _full = false;
+  @Input()
+  set full(value: boolean | string) {
+    this._full = typeof value === 'string' ? value === '' : !!value;
   }
-  get full(): boolean{
+  get full(): boolean {
     return this._full;
   }
 
