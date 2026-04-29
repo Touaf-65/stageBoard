@@ -10,6 +10,13 @@ export const API_CONFIG = {
         },
         ENTREPRISE: {
             GET: '/entreprise',
+        },
+        ECHEANCE: {
+            BASE: '/echeances/',
+
+        },
+        JOURNAL: {
+            BASE: '/journal/',
         }
     }
 

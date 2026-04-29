@@ -1,92 +1,175 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { CommonModule } from '@angular/common';
 import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
 import { NotificationService } from '../../../../shared/components/notification/notification.service';
+import { EcheanceModel } from '../../services/echeance/echeance.service';
+import { JournalModel, JournalService } from '../../services/journal/journal.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   standalone: true,
   selector: 'app-journal',
-  imports: [CommonModule, ModalComponent, NotificationComponent],
+  imports: [CommonModule, ModalComponent, NotificationComponent, FormsModule],
   templateUrl: './journal.html',
   styleUrl: './journal.scss',
 })
 export class Journal implements OnInit {
 
-  constructor(private notificationService: NotificationService) { }
+  constructor(
+    private notificationService: NotificationService,
+    private journalService: JournalService,
+    private cdr: ChangeDetectorRef
+  ) { }
+  titre: string = '';
+  description: string = '';
+  date_entree: Date = new Date()
+  competences: string = '';
+  difficultes: string = '';
+  taches: string = '';
 
-  journaux: any[] = [];
+  journals: JournalModel[] = [];
+
 
   ngOnInit() {
-    this.loadJournaux();
+    this.loadJournals();
   }
 
-  loadJournaux() {
-    this.journaux = [
-      {
-        id: 1,
-        title: 'Semaine 1 – Prise en main du projet',
-        description: 'Installation de l’environnement et compréhension de l’architecture globale.',
-        content: 'Durant cette première semaine, j’ai mis en place Angular, configuré le backend et analysé les besoins du projet StageBoard...',
-        date: new Date(2024, 4, 6)
-      },
-      {
-        id: 2,
-        title: 'Semaine 2 – Authentification',
-        description: 'Mise en place du système de login et gestion des rôles utilisateurs.',
-        content: 'J’ai implémenté un système d’authentification basé sur JWT avec gestion des rôles ADMIN, SUPERUSER...',
-        date: new Date(2024, 4, 13)
-      },
-      {
-        id: 3,
-        title: 'Semaine 3 – Gestion des pays',
-        description: 'CRUD complet des pays avec modal réutilisable.',
-        content: 'Création d’un composant modal réutilisable permettant l’ajout, la modification et la suppression des pays...',
-        date: new Date(2024, 4, 20)
-      },
-      {
-        id: 4,
-        title: 'Semaine 4 – Échéances',
-        description: 'Implémentation du module de gestion des échéances.',
-        content: 'Ajout des fonctionnalités de création, édition et suppression des échéances avec filtres par statut...',
-        date: new Date(2024, 4, 27)
-      },
-      {
-        id: 5,
-        title: 'Semaine 5 – Journal de bord',
-        description: 'Mise en place du module journal avec affichage dynamique.',
-        content: 'Développement du module journal permettant de consigner les activités hebdomadaires...',
-        date: new Date(2024, 5, 3)
+  loadJournals(): void {
+    const token = localStorage.getItem('authToken');
+    this.journalService.getJournals().subscribe({
+      next: (data) => {
+        console.log('📋 Journals rechargés:', data); // ← Ajoute ça
+
+        this.journals = data;
+        this.cdr.detectChanges();
       }
-    ];
+    });
   }
 
-  modalCreateOpen = false;
+  createJournal(): void {
+    const journalload = {
+      titre: this.titre,
+      description: this.description,
+      date_entree: this.date_entree,
+      competences: this.competences,
+      difficultes: this.difficultes,
+      taches: this.taches,
+    };
+    this.journalService.createJournal(journalload).subscribe({
+      next: (data) => {
+        this.notificationService.success('Journal créé', 'Le nouveau journal a été créé avec succès!');
+        this.titre = '';
+        this.description = '';
+        this.date_entree = new Date();
+        this.competences = '';
+        this.difficultes = '';
+        this.taches = '',
+          this.loadJournals();
+        this.modalCreateOpen = false;
+      },
+      error: (error) => {
+        this.notificationService.error('Erreur', 'Une erreur est survenue lors de la création du journal.');
+        this.modalCreateOpen = false;
+      }
+    });
+  }
+
   modalViewOpen = false;
 
-  selectedJournal: any = null;
+  selectedJournal: JournalModel | null = null;
 
-  form = {
-    title: '',
-    week: '',
-    description: '',
-    date: ''
-  };
+  // ==== CREATE ====
+  modalCreateOpen = false;
 
-  openCreateModal() {
+  openModalCreateJournal() {
     this.modalCreateOpen = true;
   }
 
-  closeCreateModal() {
+  closeModalCreateJournal() {
     this.modalCreateOpen = false;
-
-    this.form = {
-      title: '',
-      week: '',
-      description: '',
-      date: ''
-    };
   }
+
+  // ==== EDIT ====
+  journalToEdit: JournalModel | null = null;
+  editTitre: string = '';
+  editDescription: string = '';
+  editDate: Date = new Date();
+  editCompetences: string = '';
+  editDifficultes: string = '';
+  editTaches: string = '';
+  modalEditOpen = false;
+
+  openModalEditJournal(journal: JournalModel) {
+    this.journalToEdit = journal;
+    this.editTitre = journal.titre;
+    this.editDescription = journal.description;
+    this.editDate = journal.date_entree;
+    this.editCompetences = journal.competences;
+    this.editDifficultes = journal.difficultes;
+    this.editTaches = journal.taches;
+    this.modalEditOpen = true;
+  }
+
+  closeModalEditJournal() {
+    this.modalEditOpen = false;
+    this.journalToEdit = null;
+    this.editTitre = '';
+    this.editDescription = '';
+    this.editDate = new Date();
+    this.editCompetences = '';
+    this.editDifficultes = '';
+    this.editTaches = ''
+  }
+
+  editJournal(): void {
+    if (!this.selectedJournal) return;
+    const journal = this.selectedJournal;
+    this.closeView();
+    this.openModalEditJournal(journal);
+  }
+
+  saveEditJournal(): void {
+    if (!this.journalToEdit) return;
+
+    const payload = {
+      titre: this.editTitre,
+      description: this.editDescription,
+      date_entree: this.editDate,
+      competences: this.editCompetences,
+      difficultes: this.editDifficultes,
+      taches: this.editTaches,
+    };
+
+    this.journalService.updateJournal(this.journalToEdit.id, payload).subscribe({
+      next: () => {
+        this.loadJournals();
+        this.notificationService.success('Journal modifié', 'Le journal a été modifié avec succès!');
+        this.closeModalEditJournal();
+      },
+      error: () => {
+        this.notificationService.error('Erreur', 'Une erreur est survenue lors de la modification du journal.');
+        this.closeModalEditJournal();
+      }
+    });
+  }
+
+  deleteJournal(): void {
+    if (!this.selectedJournal) return;
+
+    this.journalService.deleteJournal(this.selectedJournal!.id).subscribe({
+      next: () => {
+        this.notificationService.success('Journal supprimé', 'Le journal a été supprimé avec succès!');
+        this.loadJournals();
+        this.closeView();
+      },
+      error: () => {
+        this.notificationService.error('Erreur', 'Une erreur est survenue lors de la suppression du journal.');
+        this.closeView();
+      }
+    });
+  }
+
 
   openView(j: any) {
     this.selectedJournal = j;

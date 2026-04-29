@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
@@ -15,12 +15,16 @@ import { NotificationComponent } from '../../../../shared/components/notificatio
 })
 export class Echeance implements OnInit {
 
-  constructor(private notificationService: NotificationService) { }
+  constructor(
+    private notificationService: NotificationService,
+    private echeanceService: EcheanceService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   titre: string = '';
   description: string = '';
-  date_limite: string = '';
-  statut: string = 'A venir';
+  date_limite: Date = new Date();
+  statut: 'A venir' | 'Fait' | 'En retard' = 'A venir';
 
   echeances: EcheanceModel[] = [];
 
@@ -28,64 +32,45 @@ export class Echeance implements OnInit {
   selected: any = null;
 
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadEcheances();
   }
 
-  loadEcheances() {
-    // mock temporaire
-    this.echeances = [
-      {
-        id: 1,
-        titre: 'Rapport intermédiaire',
-        description: 'Remise du rapport intermédiaire',
-        date_limite: new Date(),
-        statut: 'A venir'
-      }, {
-        id: 1,
-        titre: 'Rapport intermédiaire',
-        description: 'Remise du rapport intermédiaire',
-        date_limite: new Date(),
-        statut: 'A venir'
-      }, {
-        id: 1,
-        titre: 'Rapport intermédiaire',
-        description: 'Remise du rapport intermédiaire',
-        date_limite: new Date(),
-        statut: 'En retard'
-      }, {
-        id: 1,
-        titre: 'Rapport intermédiaire',
-        description: 'Remise du rapport intermédiaire',
-        date_limite: new Date(),
-        statut: 'Fait'
-      }, {
-        id: 1,
-        titre: 'Rapport intermédiaire',
-        description: 'Remise du rapport intermédiaire',
-        date_limite: new Date(),
-        statut: 'A venir'
-      }, {
-        id: 1,
-        titre: 'Rapport intermédiaire',
-        description: 'Remise du rapport intermédiaire',
-        date_limite: new Date(),
-        statut: 'Fait'
-      }, {
-        id: 1,
-        titre: 'Rapport intermédiaire',
-        description: 'Remise du rapport intermédiaire',
-        date_limite: new Date(),
-        statut: 'Fait'
-      }, {
-        id: 1,
-        titre: 'Rapport intermédiaire',
-        description: 'Remise du rapport intermédiaire',
-        date_limite: new Date(),
-        statut: 'En retard'
-      },
-    ];
+  loadEcheances(): void {
+    const token = localStorage.getItem('authToken');
+    this.echeanceService.getEcheances().subscribe({
+      next: (data) => {
+        this.echeances = data;
+        this.cdr.detectChanges();
+   }    });
   }
+
+
+  createEcheance(): void {
+    const echeanceload = {
+      title: this.titre,
+      description: this.description,
+      due_date: this.date_limite,
+      statut: this.statut
+    };
+    this.echeanceService.createEcheance(echeanceload).subscribe({
+      next: (data) => {
+        this.notificationService.success('Échéance créée', 'La nouvelle échéance a été créée avec succès!');
+        this.titre = '';
+        this.description = '';
+        this.date_limite = new Date();
+        this.statut = 'A venir';
+        this.loadEcheances();
+        this.modalCreateOpen = false;
+      },
+      error: (error) => {
+        this.notificationService.error('Erreur', 'Une erreur est survenue lors de la création de l\'échéance.');
+        this.modalCreateOpen = false;
+      }
+
+    })
+  }
+
 
   // ===== CREATE =====
   modalCreateOpen = false;
@@ -97,17 +82,7 @@ export class Echeance implements OnInit {
     this.modalCreateOpen = false;
   }
 
-  confirmCreateEcheance() {
-    const payload = {
-      titre: this.titre,
-      description: this.description,
-      date_limite: this.date_limite,
-      statut: this.statut
-    };
 
-    this.notificationService.success('Échéance créée', 'La nouvelle échéance a été créée avec succès!');
-    this.closeModalCreateEcheance();
-  }
 
   // Fin Modal create
 
@@ -137,16 +112,24 @@ export class Echeance implements OnInit {
     this.editStatut = 'A venir';
   }
 
-  confirmEditEcheance() {
-    if (this.echeanceToEdit) {
-      this.echeanceToEdit.titre = this.editTitre;
-      this.echeanceToEdit.description = this.editDescription;
-      this.echeanceToEdit.date_limite = this.editDate;
-      this.echeanceToEdit.statut = this.editStatut;
-
-      this.notificationService.success('Échéance modifiée', 'L\'échéance a été modifiée avec succès!');
-      this.closeModalEditEcheance();
-    }
+  EditEcheance(): void {
+    const payload = {
+      title : this.editTitre,
+      description: this.editDescription,
+      due_date: this.editDate,
+      statut: this.editStatut
+    };
+    this.echeanceService.updateEcheance(this.echeanceToEdit!.id, payload).subscribe({
+      next : () => {
+        this.notificationService.success('Échéance modifiée', 'L\'échéance a été modifiée avec succès!');
+        this.loadEcheances();
+        this.closeModalEditEcheance();
+      },
+      error: () => {
+        this.notificationService.error('Erreur', 'Une erreur est survenue lors de la modification de l\'échéance.');
+        this.closeModalEditEcheance();
+      }
+    })
   }
 
   // ===== DELETE =====
@@ -154,7 +137,7 @@ export class Echeance implements OnInit {
   echeanceToDelete: EcheanceModel | null = null;
   deleteError = '';
 
-  OpenModalDeleteEcheance(echeance: EcheanceModel) {
+  openDelete(echeance: EcheanceModel) {
     this.modalDeleteOpen = true;
     this.echeanceToDelete = echeance;
     this.deleteError = '';
@@ -166,16 +149,18 @@ export class Echeance implements OnInit {
     this.deleteError = '';
   }
 
-confirmDeleteEcheance() {
-  // if (!this.echeanceToDelete) return;
-
-  this.notificationService.success('Echéance supprimée', "L'échéance a été supprimée avec succès!");
-  this.closeModalDeleteEcheance();
-}
-
-  openDelete(e: any) {
-    this.selected = e;
-    this.modalDeleteOpen = true;
+  deleteEcheance(): void {
+    this.echeanceService.deleteEcheance(this.echeanceToDelete!.id).subscribe({
+      next: () => {
+        this.notificationService.success('Echéance supprimée', "L'échéance a été supprimée avec succès!");
+        this.loadEcheances();
+        this.closeModalDeleteEcheance();
+      },
+      error: () => {
+        this.notificationService.error('Erreur', 'Une erreur est survenue lors de la suppression de l\'échéance.');
+        this.closeModalDeleteEcheance();
+      }
+    });
   }
 
   closeDelete() {
@@ -219,7 +204,7 @@ confirmDeleteEcheance() {
 
   onDeleteFromMenu() {
     this.closeMenu();
-    this.openDeleteEcheance(this.selectedEcheance);
+    this.openDelete(this.selectedEcheance);
   }
 
   @HostListener('document:click')
