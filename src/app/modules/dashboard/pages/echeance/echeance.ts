@@ -28,6 +28,9 @@ export class Echeance implements OnInit {
 
   echeances: EcheanceModel[] = [];
 
+  filteredEcheances: EcheanceModel[] = [];
+  activeTab: 'Toutes' | 'A venir' | 'Fait' | 'En retard' = 'Toutes';
+
   // selected item
   selected: any = null;
 
@@ -41,10 +44,35 @@ export class Echeance implements OnInit {
     this.echeanceService.getEcheances().subscribe({
       next: (data) => {
         this.echeances = data;
+        this.filteredEcheances = data;
+        this.applyTabFilter();
         this.cdr.detectChanges();
-   }    });
+      }
+    });
   }
 
+  setTab(tab: 'Toutes' | 'A venir' | 'Fait' | 'En retard'): void {
+    this.activeTab = tab;
+    this.applyTabFilter();
+  }
+
+  applyTabFilter(): void {
+    if (this.activeTab === 'Toutes') {
+      this.filteredEcheances = [...this.echeances];
+    } else {
+      this.filteredEcheances = this.echeances.filter(e => e.statut === this.activeTab);
+    }
+  }
+
+  get countAvenir(): number {
+    return this.echeances.filter(e => e.statut === 'A venir').length;
+  }
+  get countFait(): number {
+    return this.echeances.filter(e => e.statut === 'Fait').length;
+  }
+  get countEnRetard(): number {
+    return this.echeances.filter(e => e.statut === 'En retard').length;
+  }
 
   createEcheance(): void {
     const echeanceload = {
@@ -114,13 +142,13 @@ export class Echeance implements OnInit {
 
   EditEcheance(): void {
     const payload = {
-      title : this.editTitre,
+      title: this.editTitre,
       description: this.editDescription,
       due_date: this.editDate,
       statut: this.editStatut
     };
     this.echeanceService.updateEcheance(this.echeanceToEdit!.id, payload).subscribe({
-      next : () => {
+      next: () => {
         this.notificationService.success('Échéance modifiée', 'L\'échéance a été modifiée avec succès!');
         this.loadEcheances();
         this.closeModalEditEcheance();

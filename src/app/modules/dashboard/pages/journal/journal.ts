@@ -29,7 +29,12 @@ export class Journal implements OnInit {
   taches: string = '';
 
   journals: JournalModel[] = [];
+  filteredJournals: JournalModel[] = [];
 
+  // Filtres
+  searchText: string = '';
+  selectedPeriode: string = '';
+  periodes: string[] = [];
 
   ngOnInit() {
     this.loadJournals();
@@ -39,12 +44,59 @@ export class Journal implements OnInit {
     const token = localStorage.getItem('authToken');
     this.journalService.getJournals().subscribe({
       next: (data) => {
-        console.log('📋 Journals rechargés:', data); // ← Ajoute ça
-
         this.journals = data;
+        this.filteredJournals = data;
+        this.buildPeriodes();
+        this.applyFilters();
         this.cdr.detectChanges();
       }
     });
+  }
+
+  buildPeriodes(): void {
+    const set = new Set<string>();
+    this.journals.forEach(j => {
+      const dateStr = typeof j.date_entree === 'string'
+        ? j.date_entree + 'T00:00:00'
+        : j.date_entree.toString();
+      const date = new Date(dateStr);
+      const label = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+      set.add(label);
+    });
+    this.periodes = Array.from(set).sort();
+  }
+
+  applyFilters(): void {
+    let result = [...this.journals];
+
+    // Filtre recherche
+    if (this.searchText.trim()) {
+      const q = this.searchText.toLowerCase();
+      result = result.filter(j =>
+        j.titre.toLowerCase().includes(q) ||
+        j.description.toLowerCase().includes(q)
+      );
+    }
+
+    // Filtre période
+    if (this.selectedPeriode) {
+      result = result.filter(j => {
+        const dateStr = typeof j.date_entree === 'string'
+          ? j.date_entree + 'T00:00:00'
+          : j.date_entree.toString();
+        const date = new Date(dateStr);
+        const label = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+        return label === this.selectedPeriode;
+      });
+    }
+
+    this.filteredJournals = result;
+  }
+
+  resetFilters(): void {
+    this.searchText = '';
+    this.selectedPeriode = '';
+    this.applyFilters();
   }
 
   createJournal(): void {

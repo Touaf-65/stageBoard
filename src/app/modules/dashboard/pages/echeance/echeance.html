@@ -23,27 +23,54 @@
     <!-- Filtres Tabs -->
     <div class="flex gap-2 mb-6">
 
-        <button class="px-4 py-2 text-sm rounded-lg bg-blue-100 text-blue-600 font-medium">
+        <button (click)="setTab('Toutes')" [ngClass]="activeTab === 'Toutes' 
+      ? 'bg-blue-100 text-blue-600 font-medium' 
+      : 'text-muted-foreground hover:bg-muted'" class="px-4 py-2 text-sm rounded-lg transition">
             Toutes
+            <span class="ml-1 text-xs bg-blue-200 text-blue-700 px-1.5 py-0.5 rounded-full">
+                {{ echeances.length }}
+            </span>
         </button>
 
-        <button class="px-4 py-2 text-sm rounded-lg text-muted-foreground hover:bg-muted">
+        <button (click)="setTab('A venir')" [ngClass]="activeTab === 'A venir' 
+      ? 'bg-blue-100 text-blue-600 font-medium' 
+      : 'text-muted-foreground hover:bg-muted'" class="px-4 py-2 text-sm rounded-lg transition">
             À venir
+            <span class="ml-1 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">
+                {{ countAvenir }}
+            </span>
         </button>
 
-        <button class="px-4 py-2 text-sm rounded-lg text-muted-foreground hover:bg-muted">
+        <button (click)="setTab('Fait')" [ngClass]="activeTab === 'Fait' 
+      ? 'bg-green-100 text-green-600 font-medium' 
+      : 'text-muted-foreground hover:bg-muted'" class="px-4 py-2 text-sm rounded-lg transition">
             Terminées
+            <span class="ml-1 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">
+                {{ countFait }}
+            </span>
         </button>
 
-        <button class="px-4 py-2 text-sm rounded-lg text-muted-foreground hover:bg-muted">
+        <button (click)="setTab('En retard')" [ngClass]="activeTab === 'En retard' 
+      ? 'bg-red-100 text-red-600 font-medium' 
+      : 'text-muted-foreground hover:bg-muted'" class="px-4 py-2 text-sm rounded-lg transition">
             En retard
+            <span class="ml-1 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">
+                {{ countEnRetard }}
+            </span>
         </button>
 
     </div>
 
+
     <div class="space-y-4">
 
-        <div *ngFor="let e of echeances; let i = index"
+        <!-- Aucun résultat -->
+        <div *ngIf="filteredEcheances.length === 0"
+            class="flex flex-col items-center justify-center py-16 rounded-xl border border-border/50 bg-background text-muted-foreground">
+            <p class="text-sm">Aucune échéance {{ activeTab !== 'Toutes' ? 'dans cette catégorie' : '' }}.</p>
+        </div>
+
+        <div *ngFor="let e of filteredEcheances; let i = index"
             class="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-background shadow-sm hover:shadow-md transition">
 
             <!-- LEFT -->
