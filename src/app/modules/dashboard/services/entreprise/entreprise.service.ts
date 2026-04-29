@@ -20,7 +20,9 @@ export interface EntrepriseModel {
 })
 export class EntrepriseService {
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
+
+  private apiUrl = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.ENTREPRISE.BASE}`;
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken');
@@ -30,30 +32,12 @@ export class EntrepriseService {
     });
   }
 
-  getEntreprise1(): Observable<EntrepriseModel> {
+  getEntreprise(): Observable<EntrepriseModel> {
+
     return this.http.get<EntrepriseModel>(
-      `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.ENTREPRISE.GET}`,
+      this.apiUrl,
       { headers: this.getAuthHeaders() }
-    ).pipe(
-      catchError(err => {
-        console.error('Erreur chargement entreprise:', err);
-        return of({} as EntrepriseModel);
-      })
     );
   }
-
-  getEntreprise(): Observable<EntrepriseModel> {
-  const token = localStorage.getItem('authToken');
-  
-  return this.http.get<EntrepriseModel>(
-    `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.ENTREPRISE.GET}`,
-    { headers: this.getAuthHeaders() }
-  ).pipe(
-    catchError(err => {
-      return of({} as EntrepriseModel);
-    })
-  );
-}
-
 
 }

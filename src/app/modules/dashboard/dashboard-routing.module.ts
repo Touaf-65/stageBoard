@@ -5,6 +5,7 @@ import { Echeance } from './pages/echeance/echeance';
 import { Journal } from './pages/journal/journal';
 import { Entreprise } from './pages/entreprise/entreprise';
 import { Profile } from './pages/profile/profile';
+import { ProfileCompleteGuard } from '../../core/guards/profile/profile-complete.guard';
 
 export const DASHBOARD_ROUTES: Routes = [
   {
@@ -13,8 +14,8 @@ export const DASHBOARD_ROUTES: Routes = [
     children: [
         { path:'', redirectTo: 'vue', pathMatch: 'full'},
         { path: 'vue', component: Vue },
-        { path: 'echeance', component: Echeance },
-        { path: 'journal', component: Journal },
+        { path: 'echeance', component: Echeance, canActivate: [ProfileCompleteGuard] },
+        { path: 'journal', component: Journal, canActivate: [ProfileCompleteGuard] },
         { path: 'entreprise', component: Entreprise },
         { path: 'profile', component: Profile }
 

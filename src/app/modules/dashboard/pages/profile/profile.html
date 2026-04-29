@@ -1,1 +1,165 @@
-<p>profile works!</p>
+<app-notifications></app-notifications>
+
+<div class="container mx-auto px-4 py-6 space-y-6">
+
+  <!-- Alerte profil incomplet -->
+  <div *ngIf="showIncompleteAlert"
+    class="rounded-xl border border-orange-200 bg-orange-50 p-4 flex items-start gap-3">
+    <span class="text-2xl">⚠️</span>
+    <div>
+      <p class="font-semibold text-orange-700">Complétez votre profil pour continuer</p>
+      <ul class="text-sm text-orange-600 mt-1 list-disc list-inside">
+        <li *ngIf="missingProfile">Vos informations personnelles sont incomplètes.</li>
+        <li *ngIf="missingEntreprise">
+          Les informations de votre entreprise ne sont pas renseignées.
+          <a routerLink="/dashboard/entreprise" class="underline font-medium">Renseigner l'entreprise →</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="flex items-center justify-between rounded-xl bg-background p-4 border border-border/50 shadow-sm">
+    <div>
+      <h1 class="text-2xl font-semibold text-foreground">Mon Profil</h1>
+      <p class="text-sm text-muted-foreground mt-1">Gérez vos informations personnelles.</p>
+    </div>
+    <button *ngIf="!isEditing && !loading"
+      (click)="openEdit()"
+      class="px-4 py-2 bg-primary text-white rounded-md text-sm hover:bg-primary/90 transition">
+      Modifier
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="flex justify-center py-10">
+    <svg class="animate-spin h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+    </svg>
+  </div>
+
+  <div *ngIf="!loading" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Avatar -->
+    <div class="lg:col-span-1">
+      <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm text-center space-y-4">
+
+        <div class="w-20 h-20 rounded-full bg-primary/10 text-primary flex items-center justify-center text-2xl font-bold mx-auto">
+          {{ initiales }}
+        </div>
+
+        <div>
+          <p class="font-semibold text-foreground text-lg">{{ profile?.prenom }} {{ profile?.nom }}</p>
+          <p class="text-sm text-muted-foreground">{{ profile?.email }}</p>
+        </div>
+
+        <div [ngClass]="isProfileComplete
+          ? 'bg-green-100 text-green-700'
+          : 'bg-orange-100 text-orange-700'"
+          class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium">
+          <span>{{ isProfileComplete ? '✅ Profil complet' : '⚠️ Profil incomplet' }}</span>
+        </div>
+
+        <div class="text-left space-y-2 pt-2 border-t border-border">
+          <div>
+            <p class="text-xs text-muted-foreground">Type de stage</p>
+            <p class="text-sm font-medium text-foreground">{{ profile?.type_stage || '—' }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-muted-foreground">Période</p>
+            <p class="text-sm font-medium text-foreground">
+              {{ (profile?.date_debut | date:'dd/MM/yyyy') || '—' }}
+              →
+              {{ (profile?.date_fin | date:'dd/MM/yyyy') || '—' }}
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Infos -->
+    <div class="lg:col-span-2">
+      <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm space-y-5">
+
+        <h2 class="text-base font-semibold text-foreground">Informations personnelles</h2>
+
+        <!-- MODE VIEW -->
+        <div *ngIf="!isEditing" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+          <div>
+            <p class="text-xs text-muted-foreground">Prénom</p>
+            <p class="text-sm font-medium text-foreground">{{ profile?.prenom || '—' }}</p>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground">Nom</p>
+            <p class="text-sm font-medium text-foreground">{{ profile?.nom || '—' }}</p>
+          </div>
+
+          <div class="sm:col-span-2">
+            <p class="text-xs text-muted-foreground">Email</p>
+            <p class="text-sm font-medium text-foreground">{{ profile?.email || '—' }}</p>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground">Filière</p>
+            <p class="text-sm font-medium text-foreground">{{ profile?.filiere || '—' }}</p>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground">Année</p>
+            <p class="text-sm font-medium text-foreground">{{ profile?.annee || '—' }}</p>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground">Date de début</p>
+            <p class="text-sm font-medium text-foreground">{{ (profile?.date_debut | date:'dd MMM yyyy') || '—' }}</p>
+          </div>
+
+          <div>
+            <p class="text-xs text-muted-foreground">Date de fin</p>
+            <p class="text-sm font-medium text-foreground">{{ (profile?.date_fin | date:'dd MMM yyyy') || '—' }}</p>
+          </div>
+
+        </div>
+
+        <!-- MODE EDIT -->
+        <div *ngIf="isEditing" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          <input type="text" [(ngModel)]="prenom" placeholder="Prénom" class="input input-bordered w-full" />
+          <input type="text" [(ngModel)]="nom" placeholder="Nom" class="input input-bordered w-full" />
+
+          <input type="email" [(ngModel)]="email" placeholder="Email" class="input input-bordered w-full sm:col-span-2" />
+
+          <input type="text" [(ngModel)]="filiere" placeholder="Filière" class="input input-bordered w-full" />
+          <input type="text" [(ngModel)]="annee" placeholder="Année" class="input input-bordered w-full" />
+
+          <input type="text" [(ngModel)]="type_stage" placeholder="Type de stage" class="input input-bordered w-full" />
+
+          <input type="date" [(ngModel)]="date_debut" class="input input-bordered w-full" />
+          <input type="date" [(ngModel)]="date_fin" class="input input-bordered w-full" />
+
+          <!-- Actions -->
+          <div class="sm:col-span-2 flex justify-end gap-3 pt-2">
+            <button (click)="cancelEdit()"
+              class="px-4 py-2 text-sm rounded-md border border-border text-muted-foreground hover:bg-muted transition">
+              Annuler
+            </button>
+
+            <button (click)="saveProfile()"
+              [disabled]="saving"
+              class="px-4 py-2 text-sm rounded-md bg-primary text-white hover:bg-primary/90 disabled:opacity-50 transition">
+              {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>

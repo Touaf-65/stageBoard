@@ -9,7 +9,7 @@ export const API_CONFIG = {
 
         },
         ENTREPRISE: {
-            GET: '/entreprise',
+            BASE: '/entreprise/',
         },
         ECHEANCE: {
             BASE: '/echeances/',
@@ -17,6 +17,9 @@ export const API_CONFIG = {
         },
         JOURNAL: {
             BASE: '/journal/',
+        },
+        PROFILE: {
+            BASE: '/users/profile'
         }
     }
 

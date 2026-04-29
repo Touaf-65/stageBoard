@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EntrepriseService, EntrepriseModel } from '../../services/entreprise/entreprise.service';
 
@@ -25,17 +25,25 @@ export class Entreprise implements OnInit {
       .slice(0, 2);
   }
 
-  constructor(private entrepriseService: EntrepriseService) {}
+  constructor(private entrepriseService: EntrepriseService,
+    private cdr: ChangeDetectorRef 
+  ) {}
 
-  ngOnInit() {
+ngOnInit() {
+  this.getEntreprise();
+}
+
+ getEntreprise(): void {
     this.entrepriseService.getEntreprise().subscribe({
       next: (data) => {
-        this.entreprise = data;
+        this.entreprise = data?.id ? data : null;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
-  }
+}
 }
