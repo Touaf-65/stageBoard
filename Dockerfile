@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Installer dépendances
-RUN npm ci
+RUN npm install
 
 # Copier le reste du projet
 COPY . .
@@ -23,7 +23,7 @@ RUN npm run build -- --configuration production
 FROM nginx:1.25-alpine AS production
 
 # Angular build output est dans dist/<project-name>
-COPY --from=builder /app/dist/ /usr/share/nginx/html
+COPY --from=builder /app/dist/stageboard /usr/share/nginx/html
 
 # Config nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
