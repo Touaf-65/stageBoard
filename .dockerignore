@@ -1,0 +1,43 @@
+# ============================================================
+# [FRONTEND] stageBoard — .dockerignore
+# ============================================================
+# Ce qui est exclu n'est pas copié dans l'image Docker.
+# Le build npm run build se fait DANS le conteneur builder,
+# donc node_modules local est inutile et très lourd.
+# ============================================================
+
+# ── Dépendances locales (reconstruites dans le conteneur) ────
+node_modules/
+
+# ── Build local (reconstruit dans le conteneur) ──────────────
+dist/
+build/
+
+# ── Secrets ──────────────────────────────────────────────────
+.env
+.env.*
+*.env
+
+# ── Git ──────────────────────────────────────────────────────
+.git/
+.gitignore
+
+# ── CI/CD ────────────────────────────────────────────────────
+.github/
+
+# ── Cache ────────────────────────────────────────────────────
+.cache/
+.vite/
+*.log
+
+# ── Docs ─────────────────────────────────────────────────────
+*.md
+README*
+
+# ── IDE ──────────────────────────────────────────────────────
+.vscode/
+.idea/
+
+# ── OS ───────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
