@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SvgIconComponent } from 'angular-svg-icon';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
@@ -12,7 +12,7 @@ import { timer } from 'rxjs';
 @Component({
   standalone: true,
   selector: 'app-sign-in',
-  imports: [CommonModule, FormsModule, SvgIconComponent, ButtonComponent, NotificationComponent],
+  imports: [CommonModule, FormsModule, SvgIconComponent, ButtonComponent, NotificationComponent, RouterLink],
   templateUrl: './sign-in.html',
   styleUrl: './sign-in.scss',
 })
