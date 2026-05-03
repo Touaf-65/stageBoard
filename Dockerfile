@@ -20,7 +20,7 @@ COPY . .
 RUN npm run build -- --configuration production
 
 # ── Étape 2 : Nginx ─────────────────────────────────────────
-FROM nginx:1.25-alpine AS production
+FROM nginx:1.28-alpine AS production
 
 # Angular build output est dans dist/<project-name>
 COPY --from=builder /app/dist/stageBoard/browser /usr/share/nginx/html
