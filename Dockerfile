@@ -28,6 +28,7 @@ COPY --from=builder /app/dist/stageBoard/browser /usr/share/nginx/html
 # Config nginx
 COPY nginx.conf /etc/nginx/nginx.conf
 
+RUN rm -f /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
