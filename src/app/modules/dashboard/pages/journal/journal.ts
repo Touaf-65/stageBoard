@@ -6,6 +6,17 @@ import { NotificationService } from '../../../../shared/components/notification/
 import { EcheanceModel } from '../../services/echeance/echeance.service';
 import { JournalModel, JournalService } from '../../services/journal/journal.service';
 import { FormsModule } from '@angular/forms';
+import { apiErrorMessage } from '../../../../shared/utils/api-error';
+import { todayIso } from '../../../../shared/utils/date';
+
+const FIELD_LABELS: Record<string, string> = {
+  titre: 'Titre',
+  description: 'Description',
+  date_entree: 'Date',
+  taches: 'Tâches',
+  competences: 'Compétences',
+  difficultes: 'Difficultés',
+};
 
 @Component({
   standalone: true,
@@ -23,7 +34,7 @@ export class Journal implements OnInit {
   ) { }
   titre: string = '';
   description: string = '';
-  date_entree: Date = new Date()
+  date_entree: string = todayIso();
   competences: string = '';
   difficultes: string = '';
   taches: string = '';
@@ -53,17 +64,14 @@ export class Journal implements OnInit {
     });
   }
 
+  // "mai 2026" à partir de "2026-05-12" (T00:00:00 : interprété en heure locale)
+  private periodeLabel(j: JournalModel): string {
+    return new Date(j.date_entree + 'T00:00:00')
+      .toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  }
+
   buildPeriodes(): void {
-    const set = new Set<string>();
-    this.journals.forEach(j => {
-      const dateStr = typeof j.date_entree === 'string'
-        ? j.date_entree + 'T00:00:00'
-        : j.date_entree.toString();
-      const date = new Date(dateStr);
-      const label = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-      set.add(label);
-    });
-    this.periodes = Array.from(set).sort();
+    this.periodes = Array.from(new Set(this.journals.map(j => this.periodeLabel(j)))).sort();
   }
 
   applyFilters(): void {
@@ -73,21 +81,14 @@ export class Journal implements OnInit {
     if (this.searchText.trim()) {
       const q = this.searchText.toLowerCase();
       result = result.filter(j =>
-        j.titre.toLowerCase().includes(q) ||
-        j.description.toLowerCase().includes(q)
+        (j.titre ?? '').toLowerCase().includes(q) ||
+        (j.description ?? '').toLowerCase().includes(q)
       );
     }
 
     // Filtre période
     if (this.selectedPeriode) {
-      result = result.filter(j => {
-        const dateStr = typeof j.date_entree === 'string'
-          ? j.date_entree + 'T00:00:00'
-          : j.date_entree.toString();
-        const date = new Date(dateStr);
-        const label = date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-        return label === this.selectedPeriode;
-      });
+      result = result.filter(j => this.periodeLabel(j) === this.selectedPeriode);
     }
 
     this.filteredJournals = result;
@@ -113,16 +114,16 @@ export class Journal implements OnInit {
         this.notificationService.success('Journal créé', 'Le nouveau journal a été créé avec succès!');
         this.titre = '';
         this.description = '';
-        this.date_entree = new Date();
+        this.date_entree = todayIso();
         this.competences = '';
         this.difficultes = '';
-        this.taches = '',
-          this.loadJournals();
+        this.taches = '';
+        this.loadJournals();
         this.modalCreateOpen = false;
       },
+      // La modale reste ouverte pour corriger la saisie
       error: (error) => {
-        this.notificationService.error('Erreur', 'Une erreur est survenue lors de la création du journal.');
-        this.modalCreateOpen = false;
+        this.notificationService.error('Erreur', apiErrorMessage(error, 'Une erreur est survenue lors de la création du journal.', FIELD_LABELS));
       }
     });
   }
@@ -146,7 +147,7 @@ export class Journal implements OnInit {
   journalToEdit: JournalModel | null = null;
   editTitre: string = '';
   editDescription: string = '';
-  editDate: Date = new Date();
+  editDate: string = todayIso();
   editCompetences: string = '';
   editDifficultes: string = '';
   editTaches: string = '';
@@ -155,7 +156,7 @@ export class Journal implements OnInit {
   openModalEditJournal(journal: JournalModel) {
     this.journalToEdit = journal;
     this.editTitre = journal.titre;
-    this.editDescription = journal.description;
+    this.editDescription = journal.description ?? '';
     this.editDate = journal.date_entree;
     this.editCompetences = journal.competences;
     this.editDifficultes = journal.difficultes;
@@ -168,7 +169,7 @@ export class Journal implements OnInit {
     this.journalToEdit = null;
     this.editTitre = '';
     this.editDescription = '';
-    this.editDate = new Date();
+    this.editDate = todayIso();
     this.editCompetences = '';
     this.editDifficultes = '';
     this.editTaches = ''
@@ -199,9 +200,9 @@ export class Journal implements OnInit {
         this.notificationService.success('Journal modifié', 'Le journal a été modifié avec succès!');
         this.closeModalEditJournal();
       },
-      error: () => {
-        this.notificationService.error('Erreur', 'Une erreur est survenue lors de la modification du journal.');
-        this.closeModalEditJournal();
+      // La modale reste ouverte pour corriger la saisie
+      error: (error) => {
+        this.notificationService.error('Erreur', apiErrorMessage(error, 'Une erreur est survenue lors de la modification du journal.', FIELD_LABELS));
       }
     });
   }
@@ -215,8 +216,8 @@ export class Journal implements OnInit {
         this.loadJournals();
         this.closeView();
       },
-      error: () => {
-        this.notificationService.error('Erreur', 'Une erreur est survenue lors de la suppression du journal.');
+      error: (error) => {
+        this.notificationService.error('Erreur', apiErrorMessage(error, 'Une erreur est survenue lors de la suppression du journal.'));
         this.closeView();
       }
     });

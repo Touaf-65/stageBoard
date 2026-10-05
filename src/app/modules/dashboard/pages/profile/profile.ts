@@ -1,10 +1,24 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { ProfileService, ProfileModel } from '../../services/profile/profile.service'
+import { EntrepriseService } from '../../services/entreprise/entreprise.service';
 import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
 import { NotificationService } from '../../../../shared/components/notification/notification.service';
+import { UserService } from '../../../authentication/services/user/user.service';
+import { apiErrorMessage, isAuthError } from '../../../../shared/utils/api-error';
+
+const FIELD_LABELS: Record<string, string> = {
+  nom: 'Nom',
+  prenom: 'Prénom',
+  email: 'Email',
+  filiere: 'Filière',
+  annee: 'Année',
+  type_stage: 'Type de stage',
+  date_debut: 'Date de début',
+  date_fin: 'Date de fin',
+};
 
 @Component({
   standalone: true,
@@ -18,7 +32,8 @@ export class Profile implements OnInit {
   constructor(
     private profileService: ProfileService,
     private notificationService: NotificationService,
-    private route: ActivatedRoute,
+    private userService: UserService,
+    private entrepriseService: EntrepriseService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -53,15 +68,8 @@ export class Profile implements OnInit {
   }
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      if (params['incomplete']) {
-        this.showIncompleteAlert = true;
-        this.missingProfile = params['missingProfile'] === 'true';
-        this.missingEntreprise = params['missingEntreprise'] === 'true';
-      }
-    });
-
     this.loadProfile();
+    this.checkEntreprise();
   }
 
 
@@ -71,13 +79,39 @@ export class Profile implements OnInit {
         this.profile = data;
         this.fillFields(data);
         this.loading = false;
-        this.cdr.detectChanges();
+        this.updateIncompleteAlert();
       },
-      error: () => {
+      error: (error) => {
         this.loading = false;
-        this.notificationService.error('Erreur', 'Impossible de charger le profil');
+        if (isAuthError(error)) {
+          this.userService.logout();
+          return;
+        }
+        this.notificationService.error('Erreur', apiErrorMessage(error, 'Impossible de charger le profil'));
+        this.cdr.detectChanges();
       }
     });
+  }
+
+  // Seule une 404 signifie "aucune entreprise" ; une autre erreur ne permet pas de conclure
+  checkEntreprise(): void {
+    this.entrepriseService.getEntreprise().subscribe({
+      next: (data) => {
+        this.missingEntreprise = !data?.id;
+        this.updateIncompleteAlert();
+      },
+      error: (error) => {
+        this.missingEntreprise = error.status === 404;
+        this.updateIncompleteAlert();
+      }
+    });
+  }
+
+  // L'alerte reflète l'état réel, pas les paramètres de l'URL (qui deviennent obsolètes)
+  private updateIncompleteAlert(): void {
+    this.missingProfile = !!this.profile && !this.isProfileComplete;
+    this.showIncompleteAlert = this.missingProfile || this.missingEntreprise;
+    this.cdr.detectChanges();
   }
 
 
@@ -124,6 +158,9 @@ export class Profile implements OnInit {
         this.saving = false;
         this.showIncompleteAlert = false;
 
+        // Garde l'email affiché dans la navbar à jour
+        this.userService.setConnectedUser({ ...this.userService.getConnectedUser(), email: data.email });
+
         this.notificationService.success(
           'Profil mis à jour',
           'Vos informations ont été enregistrées.'
@@ -133,12 +170,13 @@ export class Profile implements OnInit {
 
         this.cdr.detectChanges();
       },
-      error: () => {
+      error: (error) => {
         this.saving = false;
         this.notificationService.error(
           'Erreur',
-          'Une erreur est survenue lors de la mise à jour.'
+          apiErrorMessage(error, 'Une erreur est survenue lors de la mise à jour.', FIELD_LABELS)
         );
+        this.cdr.detectChanges();
       }
     });
   }

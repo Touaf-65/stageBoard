@@ -6,8 +6,8 @@ import { API_CONFIG } from '../../../../core/constants/api.config';
 export interface JournalModel {
   id: number;
   titre: string;
-  description: string;
-  date_entree: Date;
+  description: string | null;
+  date_entree: string; // AAAA-MM-JJ
   competences: string;
   difficultes: string;
   taches: string;
@@ -15,8 +15,8 @@ export interface JournalModel {
 
 export interface CreateJournalRequest {
   titre: string;
-  description: string;
-  date_entree: Date;
+  description: string | null;
+  date_entree: string; // AAAA-MM-JJ
   competences: string;
   difficultes: string;
   taches: string;

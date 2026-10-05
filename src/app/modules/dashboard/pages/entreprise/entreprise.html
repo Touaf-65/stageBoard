@@ -10,7 +10,7 @@
         Informations sur votre entreprise d'accueil et votre tuteur.
       </p>
     </div>
-    <button *ngIf="!loading && !isEditing"
+    <button *ngIf="!loading && !isEditing && !loadError"
       (click)="openEdit()"
       class="px-4 py-2 bg-primary text-white rounded-md text-sm hover:bg-primary/90 transition">
       {{ entreprise ? 'Modifier' : 'Renseigner' }}
@@ -165,8 +165,18 @@
     </div>
   </div>
 
+  <!-- Erreur de chargement (autre qu'une absence de fiche) -->
+  <div *ngIf="!loading && !isEditing && loadError"
+    class="rounded-xl border border-red-200 bg-red-50 p-6 text-center space-y-4">
+    <p class="text-red-700 font-medium">{{ loadError }}</p>
+    <button (click)="getEntreprise()"
+      class="px-4 py-2 bg-primary text-white rounded-md text-sm hover:bg-primary/90 transition">
+      Réessayer
+    </button>
+  </div>
+
   <!-- Aucune entreprise -->
-  <div *ngIf="!loading && !isEditing && !entreprise"
+  <div *ngIf="!loading && !isEditing && !entreprise && !loadError"
     class="rounded-xl bg-background p-10 border border-dashed border-border text-center space-y-4">
     <p class="text-foreground font-medium">Aucune entreprise renseignée.</p>
     <p class="text-sm text-muted-foreground">

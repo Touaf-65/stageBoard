@@ -5,7 +5,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { EntrepriseService, EntrepriseModel, EntrepriseRequest } from '../../services/entreprise/entreprise.service';
 import { NotificationService } from '../../../../shared/components/notification/notification.service';
 import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
-import { apiErrorMessage } from '../../../../shared/utils/api-error';
+import { apiErrorMessage, isAuthError } from '../../../../shared/utils/api-error';
+import { UserService } from '../../../authentication/services/user/user.service';
 
 const FIELD_LABELS: Record<string, string> = {
   nom: "Nom de l'entreprise",
@@ -29,6 +30,7 @@ export class Entreprise implements OnInit {
   loading = true;
   saving = false;
   isEditing = false;
+  loadError = '';
 
   form: EntrepriseRequest = this.emptyForm();
 
@@ -47,6 +49,7 @@ export class Entreprise implements OnInit {
   constructor(
     private entrepriseService: EntrepriseService,
     private notificationService: NotificationService,
+    private userService: UserService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -55,16 +58,25 @@ export class Entreprise implements OnInit {
   }
 
   getEntreprise(): void {
+    this.loading = true;
+    this.loadError = '';
     this.entrepriseService.getEntreprise().subscribe({
       next: (data) => {
         this.entreprise = data?.id ? data : null;
         this.loading = false;
         this.cdr.detectChanges();
       },
-      // 404 = aucune fiche entreprise pour cet utilisateur
-      error: () => {
-        this.entreprise = null;
+      error: (error: HttpErrorResponse) => {
         this.loading = false;
+        if (isAuthError(error)) {
+          this.userService.logout();
+          return;
+        }
+        this.entreprise = null;
+        // Seule une 404 signifie "aucune fiche entreprise" ; sinon on affiche l'erreur
+        if (error.status !== 404) {
+          this.loadError = apiErrorMessage(error, "Impossible de charger les informations de l'entreprise.");
+        }
         this.cdr.detectChanges();
       }
     });
@@ -120,10 +132,19 @@ export class Entreprise implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.saving = false;
+        if (isAuthError(error)) {
+          this.userService.logout();
+          return;
+        }
         this.notificationService.error(
           'Erreur',
           apiErrorMessage(error, "Une erreur est survenue lors de l'enregistrement.", FIELD_LABELS)
         );
+        // 409 : une fiche existe déjà côté serveur, on recharge pour se resynchroniser
+        if (error.status === 409) {
+          this.isEditing = false;
+          this.getEntreprise();
+        }
         this.cdr.detectChanges();
       }
     });

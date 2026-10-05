@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { API_CONFIG } from '../../../../core/constants/api.config';
 
 export interface ProfileModel {
@@ -37,12 +37,13 @@ export class ProfileService {
     );
   }
 
+  // L'API renvoie { msg, profile } : on ne garde que le profil mis à jour
   updateProfile(data: Partial<ProfileModel>): Observable<ProfileModel> {
-    return this.http.put<ProfileModel>(
+    return this.http.put<{ msg: string; profile: ProfileModel }>(
       `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PROFILE.BASE}`,
       data,
       { headers: this.getAuthHeaders() }
-    );
+    ).pipe(map(response => response.profile));
   }
 
   isProfileComplete(profile: ProfileModel | null): boolean {

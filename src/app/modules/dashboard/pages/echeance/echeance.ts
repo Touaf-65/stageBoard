@@ -5,6 +5,15 @@ import { ModalComponent } from '../../../../shared/components/modal/modal.compon
 import { EcheanceModel, EcheanceService } from '../../services/echeance/echeance.service';
 import { NotificationService } from '../../../../shared/components/notification/notification.service';
 import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
+import { apiErrorMessage } from '../../../../shared/utils/api-error';
+import { todayIso } from '../../../../shared/utils/date';
+
+const FIELD_LABELS: Record<string, string> = {
+  title: 'Titre',
+  description: 'Description',
+  due_date: 'Date limite',
+  statut: 'Statut',
+};
 
 @Component({
   standalone: true,
@@ -23,7 +32,7 @@ export class Echeance implements OnInit {
 
   titre: string = '';
   description: string = '';
-  date_limite: Date = new Date();
+  date_limite: string = todayIso();
   statut: 'A venir' | 'Fait' | 'En retard' = 'A venir';
 
   echeances: EcheanceModel[] = [];
@@ -86,14 +95,14 @@ export class Echeance implements OnInit {
         this.notificationService.success('Échéance créée', 'La nouvelle échéance a été créée avec succès!');
         this.titre = '';
         this.description = '';
-        this.date_limite = new Date();
+        this.date_limite = todayIso();
         this.statut = 'A venir';
         this.loadEcheances();
         this.modalCreateOpen = false;
       },
+      // La modale reste ouverte pour corriger la saisie
       error: (error) => {
-        this.notificationService.error('Erreur', 'Une erreur est survenue lors de la création de l\'échéance.');
-        this.modalCreateOpen = false;
+        this.notificationService.error('Erreur', apiErrorMessage(error, 'Une erreur est survenue lors de la création de l\'échéance.', FIELD_LABELS));
       }
 
     })
@@ -116,7 +125,7 @@ export class Echeance implements OnInit {
 
   // ===== EDIT =====
   echeanceToEdit: EcheanceModel | null = null;
-  editDate: Date = new Date();
+  editDate: string = todayIso();
   editTitre: string = '';
   editDescription: string = '';
   editStatut: 'A venir' | 'Fait' | 'En retard' = 'A venir';
@@ -126,7 +135,7 @@ export class Echeance implements OnInit {
     this.modalEditOpen = true;
     this.echeanceToEdit = echeance;
     this.editTitre = echeance.titre;
-    this.editDescription = echeance.description;
+    this.editDescription = echeance.description ?? '';
     this.editDate = echeance.date_limite;
     this.editStatut = echeance.statut;
   }
@@ -136,7 +145,7 @@ export class Echeance implements OnInit {
     this.echeanceToEdit = null;
     this.editTitre = '';
     this.editDescription = '';
-    this.editDate = new Date();
+    this.editDate = todayIso();
     this.editStatut = 'A venir';
   }
 
@@ -153,9 +162,9 @@ export class Echeance implements OnInit {
         this.loadEcheances();
         this.closeModalEditEcheance();
       },
-      error: () => {
-        this.notificationService.error('Erreur', 'Une erreur est survenue lors de la modification de l\'échéance.');
-        this.closeModalEditEcheance();
+      // La modale reste ouverte pour corriger la saisie
+      error: (error) => {
+        this.notificationService.error('Erreur', apiErrorMessage(error, 'Une erreur est survenue lors de la modification de l\'échéance.', FIELD_LABELS));
       }
     })
   }
@@ -184,8 +193,8 @@ export class Echeance implements OnInit {
         this.loadEcheances();
         this.closeModalDeleteEcheance();
       },
-      error: () => {
-        this.notificationService.error('Erreur', 'Une erreur est survenue lors de la suppression de l\'échéance.');
+      error: (error) => {
+        this.notificationService.error('Erreur', apiErrorMessage(error, 'Une erreur est survenue lors de la suppression de l\'échéance.'));
         this.closeModalDeleteEcheance();
       }
     });

@@ -8,6 +8,7 @@ import { UserService } from '../../services/user/user.service';
 import { NotificationService } from '../../../../shared/components/notification/notification.service';
 import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
 import { timer } from 'rxjs';
+import { apiErrorMessage } from '../../../../shared/utils/api-error';
 
 @Component({
   standalone: true,
@@ -75,7 +76,7 @@ export class SignUp implements OnInit {
         this.loading = false;
         this.notificationService.error(
           'Erreur d\'inscription',
-          error.error?.msg || error.error?.message || 'Une erreur est survenue lors de l\'inscription',
+          apiErrorMessage(error, 'Une erreur est survenue lors de l\'inscription', { email: 'Email', password: 'Mot de passe' }),
         );
       },
     });

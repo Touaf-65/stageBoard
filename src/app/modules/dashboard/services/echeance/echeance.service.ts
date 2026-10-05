@@ -6,15 +6,15 @@ import { Observable } from 'rxjs';
 export interface EcheanceModel {
   id: number;
   titre: string;
-  description: string;
-  date_limite: Date;
+  description: string | null;
+  date_limite: string; // AAAA-MM-JJ
   statut: 'A venir' | 'Fait' | 'En retard';
 }
 
 export interface CreateEcheanceRequest {
   title: string;
-  description: string;
-  due_date: Date;
+  description: string | null;
+  due_date: string; // AAAA-MM-JJ
   statut: 'A venir' | 'Fait' | 'En retard';
 }
 

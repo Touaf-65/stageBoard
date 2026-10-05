@@ -23,3 +23,11 @@ export function apiErrorMessage(
 
   return body?.msg || body?.error || fallback;
 }
+
+/**
+ * Session expirée ou token invalide : flask-jwt-extended répond 401
+ * (token absent/expiré) ou 422 (token mal formé, signature invalide).
+ */
+export function isAuthError(error: HttpErrorResponse | null | undefined): boolean {
+  return error?.status === 401 || error?.status === 422;
+}

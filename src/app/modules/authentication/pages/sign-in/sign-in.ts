@@ -8,6 +8,7 @@ import { UserService } from '../../services/user/user.service';
 import { NotificationService } from '../../../../shared/components/notification/notification.service';
 import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
 import { timer } from 'rxjs';
+import { apiErrorMessage } from '../../../../shared/utils/api-error';
 
 @Component({
   standalone: true,
@@ -55,7 +56,7 @@ export class SignIn implements OnInit {
             this.userService.setConnectedUser(user);
             this.notificationService.success(
               'Connexion réussie',
-              'Bienvenue, ${user.email || "utilisateur"} !'
+              `Bienvenue, ${user?.email || 'utilisateur'} !`
             );
             timer(2000).subscribe(() => {
               this.router.navigate(['/dashboard']);
@@ -66,7 +67,7 @@ export class SignIn implements OnInit {
         this.loading = false;
         this.notificationService.error(
           'Erreur de connexion', 
-          error.error?.message || 'Identifiants incorrects ou problème de connexion'
+          apiErrorMessage(error, 'Identifiants incorrects ou problème de connexion', { email: 'Email', password: 'Mot de passe' })
         );
       }
     };
