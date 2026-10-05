@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-    //BASE_URL: '',
+    // "/api" : servi par nginx en production, par proxy.conf.json avec ng serve en local
     BASE_URL: '/api',
     ENDPOINTS: {
         AUTH: {
