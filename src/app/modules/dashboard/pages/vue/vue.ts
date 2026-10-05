@@ -6,11 +6,12 @@ import { catchError } from 'rxjs/operators';
 import { ProfileModel, ProfileService } from '../../services/profile/profile.service';
 import { EcheanceModel, EcheanceService } from '../../services/echeance/echeance.service';
 import { JournalModel, JournalService } from '../../services/journal/journal.service';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
 
 @Component({
   standalone: true,
   selector: 'app-vue',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, IconComponent],
   templateUrl: './vue.html',
   styleUrl: './vue.scss',
 })
@@ -89,9 +90,17 @@ export class Vue implements OnInit {
 
   get badgeEcheanceClass(): string {
     const j = this.joursAvantEcheance;
-    if (j <= 2) return 'bg-red-100 text-red-700';
-    if (j <= 7) return 'bg-yellow-100 text-yellow-700';
-    return 'bg-green-100 text-green-700';
+    if (j <= 2) return 'badge-danger';
+    if (j <= 7) return 'badge-warning';
+    return 'badge-success';
+  }
+
+  // "Aujourd'hui", "Demain", "Dans 5 jours" (au lieu de "Dans 0 jours" / "Dans 1 jours")
+  get delaiEcheanceLabel(): string {
+    const j = this.joursAvantEcheance;
+    if (j === 0) return "Aujourd'hui";
+    if (j === 1) return 'Demain';
+    return `Dans ${j} jours`;
   }
 
   // ===== Échéances en attente =====

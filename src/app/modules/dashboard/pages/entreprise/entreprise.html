@@ -3,7 +3,7 @@
 <div class="container mx-auto px-4 py-6 space-y-8">
 
   <!-- Header -->
-  <div class="flex items-center justify-between mb-6 rounded-xl bg-background p-4 border border-border/50 shadow-sm">
+  <div class="card flex flex-wrap items-center justify-between gap-4 p-4">
     <div>
       <h1 class="text-2xl font-semibold text-foreground">Entreprise</h1>
       <p class="text-sm text-muted-foreground mt-1">
@@ -12,7 +12,8 @@
     </div>
     <button *ngIf="!loading && !isEditing && !loadError"
       (click)="openEdit()"
-      class="px-4 py-2 bg-primary text-white rounded-md text-sm hover:bg-primary/90 transition">
+      class="btn-primary">
+      <app-icon [name]="entreprise ? 'pencil' : 'plus'" class="h-4 w-4" />
       {{ entreprise ? 'Modifier' : 'Renseigner' }}
     </button>
   </div>
@@ -26,7 +27,7 @@
   </div>
 
   <!-- MODE EDIT -->
-  <div *ngIf="!loading && isEditing" class="rounded-xl bg-background p-6 border border-border/50 shadow-sm space-y-6">
+  <div *ngIf="!loading && isEditing" class="card space-y-6 p-6">
 
     <div>
       <h2 class="text-base font-semibold text-foreground mb-4">Informations entreprise</h2>
@@ -71,15 +72,10 @@
     </div>
 
     <!-- Actions -->
-    <div class="flex justify-end gap-3 pt-2">
-      <button (click)="cancelEdit()"
-        class="px-4 py-2 text-sm rounded-md border border-border text-muted-foreground hover:bg-muted transition">
-        Annuler
-      </button>
-      <button (click)="saveEntreprise()"
-        [disabled]="saving || !form.nom.trim()"
-        class="px-4 py-2 text-sm rounded-md bg-primary text-white hover:bg-primary/90 disabled:opacity-50 transition">
-        {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+    <div class="form__actions">
+      <button (click)="cancelEdit()" class="btn-secondary">Annuler</button>
+      <button (click)="saveEntreprise()" [disabled]="saving || !form.nom.trim()" class="btn-primary">
+        {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
       </button>
     </div>
 
@@ -90,13 +86,13 @@
 
     <!-- INFOS ENTREPRISE -->
     <div class="lg:col-span-3">
-      <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm hover:shadow-md transition">
+      <div class="card p-6">
         <h2 class="text-base font-semibold text-foreground mb-6">Informations entreprise</h2>
         <div class="space-y-4">
 
           <div>
             <p class="text-sm text-muted-foreground">Nom de l'entreprise</p>
-            <p class="text-sm font-medium text-foreground">{{ entreprise.nom }}</p>
+            <p class="break-words text-sm font-medium text-foreground">{{ entreprise.nom }}</p>
           </div>
 
           <div>
@@ -108,7 +104,7 @@
 
           <div>
             <p class="text-sm text-muted-foreground">Adresse</p>
-            <p class="text-sm font-medium text-foreground">{{ entreprise.adresse || '—' }}</p>
+            <p class="break-words text-sm font-medium text-foreground">{{ entreprise.adresse || '—' }}</p>
           </div>
 
           <hr>
@@ -122,44 +118,35 @@
       </div>
     </div>
 
-    <!-- TUTEUR + NOTES -->
+    <!-- TUTEUR -->
     <div class="lg:col-span-2 space-y-6">
 
       <!-- TUTEUR -->
-      <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm hover:shadow-md transition">
+      <div class="card p-6">
         <h2 class="text-base font-semibold mb-6">Tuteur professionnel</h2>
 
         <div class="flex items-center gap-4 mb-6">
           <!-- Avatar avec initiales -->
-          <div class="w-14 h-14 rounded-full bg-primary/10 text-primary flex items-center justify-center text-lg font-bold">
+          <div class="w-14 h-14 shrink-0 rounded-full bg-primary/10 text-primary flex items-center justify-center text-lg font-bold">
             {{ initiales }}
           </div>
-          <div>
-            <p class="font-semibold text-foreground">{{ entreprise.nom_tuteur || 'Tuteur non renseigné' }}</p>
+          <div class="min-w-0">
+            <p class="break-words font-semibold text-foreground">{{ entreprise.nom_tuteur || 'Tuteur non renseigné' }}</p>
           </div>
         </div>
 
         <div class="space-y-4">
           <div class="flex items-start gap-3">
-            <span>📧</span>
-            <div>
+            <app-icon name="envelope" class="mt-0.5 h-5 w-5 text-muted-foreground" />
+            <div class="min-w-0">
               <p class="text-sm text-muted-foreground">Email</p>
               <a *ngIf="entreprise.email_tuteur; else noEmail"
                 [href]="'mailto:' + entreprise.email_tuteur"
-                class="text-sm text-foreground hover:underline">{{ entreprise.email_tuteur }}</a>
+                class="break-all text-sm text-primary hover:underline">{{ entreprise.email_tuteur }}</a>
               <ng-template #noEmail><p class="text-sm text-foreground">—</p></ng-template>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- NOTES -->
-      <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm hover:shadow-md transition">
-        <h2 class="text-base font-semibold mb-4">Notes</h2>
-        <p class="text-sm text-muted-foreground leading-relaxed">
-          Disponible pour les points hebdomadaires<br>
-          Le vendredi après-midi
-        </p>
       </div>
 
     </div>
@@ -167,23 +154,24 @@
 
   <!-- Erreur de chargement (autre qu'une absence de fiche) -->
   <div *ngIf="!loading && !isEditing && loadError"
-    class="rounded-xl border border-red-200 bg-red-50 p-6 text-center space-y-4">
-    <p class="text-red-700 font-medium">{{ loadError }}</p>
-    <button (click)="getEntreprise()"
-      class="px-4 py-2 bg-primary text-white rounded-md text-sm hover:bg-primary/90 transition">
+    class="flex flex-col items-center space-y-4 rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center">
+    <p class="font-medium text-destructive">{{ loadError }}</p>
+    <button (click)="getEntreprise()" class="btn-secondary">
+      <app-icon name="arrow-path" class="h-4 w-4" />
       Réessayer
     </button>
   </div>
 
   <!-- Aucune entreprise -->
   <div *ngIf="!loading && !isEditing && !entreprise && !loadError"
-    class="rounded-xl bg-background p-10 border border-dashed border-border text-center space-y-4">
+    class="flex flex-col items-center space-y-4 rounded-xl border border-dashed border-border bg-background p-10 text-center">
+    <app-icon name="exclamation-triangle" class="h-8 w-8 text-muted-foreground/60" />
     <p class="text-foreground font-medium">Aucune entreprise renseignée.</p>
     <p class="text-sm text-muted-foreground">
       Renseignez votre entreprise d'accueil pour accéder aux échéances et au journal de bord.
     </p>
-    <button (click)="openEdit()"
-      class="px-4 py-2 bg-primary text-white rounded-md text-sm hover:bg-primary/90 transition">
+    <button (click)="openEdit()" class="btn-primary">
+      <app-icon name="plus" class="h-4 w-4" />
       Renseigner mon entreprise
     </button>
   </div>

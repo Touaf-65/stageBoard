@@ -65,7 +65,7 @@ export class SignUp implements OnInit {
       next: (data: any) => {
         this.notificationService.success(
           'Inscription réussie',
-          'Votre compte a été créé avec succès!',
+          'Votre compte a été créé avec succès.',
         );
 
         timer(1500).subscribe(() => {

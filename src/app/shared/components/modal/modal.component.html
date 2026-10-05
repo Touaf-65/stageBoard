@@ -1,28 +1,31 @@
 <ng-container *ngIf="isOpen">
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 dark:bg-black/40 transition-colors duration-300" (click)="closeModal()">
-    <div class="relative rounded-xl shadow-custom border border-border w-11/12 mx-4 bg-background text-foreground transition-all duration-300"
-         [ngClass]="{
-            'max-w-sm': size === 'sm',
-            'max-w-md': size === 'md',
-            'max-w-lg': size === 'lg',
-            'max-w-xl': size === 'xl',
-            'max-w-2xl': size === '2xl',
-            'max-w-3xl': size === '3xl',
-            'max-w-4xl': size === '4xl',
-            'max-w-5xl': size === '5xl'
-         }"
-         (click)="$event.stopPropagation()">
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 transition-colors duration-300 dark:bg-black/70"
+    (click)="closeModal()">
+    <!-- Hauteur bornée à l'écran : l'en-tête reste visible, le contenu défile -->
+    <div role="dialog" aria-modal="true" [attr.aria-label]="title"
+      class="relative flex max-h-[calc(100dvh-2rem)] w-full flex-col rounded-xl border border-border bg-background text-foreground shadow-custom transition-all duration-300"
+      [ngClass]="{
+        'max-w-sm': size === 'sm',
+        'max-w-md': size === 'md',
+        'max-w-lg': size === 'lg',
+        'max-w-xl': size === 'xl',
+        'max-w-2xl': size === '2xl',
+        'max-w-3xl': size === '3xl',
+        'max-w-4xl': size === '4xl',
+        'max-w-5xl': size === '5xl'
+      }"
+      (click)="$event.stopPropagation()">
       <!-- Modal Header -->
-      <div class="flex justify-between items-center p-4 border-b border-border bg-card rounded-t-xl">
-        <div>
-          <h3 class="font-bold text-xl text-foreground text-center">{{ title }}</h3>
-        </div>
-        <button (click)="closeModal()" class="btn btn-xs btn-outline btn-neutral">
-          X
+      <div class="flex shrink-0 items-center justify-between gap-4 border-b border-border px-5 py-4">
+        <h3 class="truncate text-lg font-semibold text-foreground">{{ title }}</h3>
+        <button type="button" (click)="closeModal()" class="btn-icon" aria-label="Fermer">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
       </div>
       <!-- Modal Body -->
-      <div class="p-4">
+      <div class="overflow-y-auto px-5 py-4">
         <ng-content></ng-content>
       </div>
     </div>

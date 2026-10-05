@@ -3,9 +3,9 @@ import { ModalComponent } from '../../../../shared/components/modal/modal.compon
 import { CommonModule } from '@angular/common';
 import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
 import { NotificationService } from '../../../../shared/components/notification/notification.service';
-import { EcheanceModel } from '../../services/echeance/echeance.service';
 import { JournalModel, JournalService } from '../../services/journal/journal.service';
 import { FormsModule } from '@angular/forms';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
 import { DateRange, clampDate, journalRange, todayIso } from '../../../../shared/utils/date';
 import { ProfileModel, ProfileService } from '../../services/profile/profile.service';
@@ -22,7 +22,7 @@ const FIELD_LABELS: Record<string, string> = {
 @Component({
   standalone: true,
   selector: 'app-journal',
-  imports: [CommonModule, ModalComponent, NotificationComponent, FormsModule],
+  imports: [CommonModule, ModalComponent, NotificationComponent, FormsModule, IconComponent],
   templateUrl: './journal.html',
   styleUrl: './journal.scss',
 })
@@ -127,7 +127,7 @@ export class Journal implements OnInit {
     };
     this.journalService.createJournal(journalload).subscribe({
       next: (data) => {
-        this.notificationService.success('Journal créé', 'Le nouveau journal a été créé avec succès!');
+        this.notificationService.success('Entrée ajoutée', "L'entrée du journal a été ajoutée.");
         this.loadJournals();
         this.modalCreateOpen = false;
       },
@@ -214,7 +214,7 @@ export class Journal implements OnInit {
     this.journalService.updateJournal(this.journalToEdit.id, payload).subscribe({
       next: () => {
         this.loadJournals();
-        this.notificationService.success('Journal modifié', 'Le journal a été modifié avec succès!');
+        this.notificationService.success('Entrée modifiée', "L'entrée du journal a été modifiée.");
         this.closeModalEditJournal();
       },
       // La modale reste ouverte pour corriger la saisie
@@ -224,24 +224,41 @@ export class Journal implements OnInit {
     });
   }
 
-  deleteJournal(): void {
-    if (!this.selectedJournal) return;
+  // ==== DELETE (avec confirmation, comme pour les échéances) ====
+  modalDeleteOpen = false;
+  journalToDelete: JournalModel | null = null;
 
-    this.journalService.deleteJournal(this.selectedJournal!.id).subscribe({
+  askDeleteJournal(): void {
+    if (!this.selectedJournal) return;
+    this.journalToDelete = this.selectedJournal;
+    this.closeView();
+    this.modalDeleteOpen = true;
+  }
+
+  closeModalDeleteJournal(): void {
+    this.modalDeleteOpen = false;
+    this.journalToDelete = null;
+  }
+
+  deleteJournal(): void {
+    if (!this.journalToDelete) return;
+
+    this.journalService.deleteJournal(this.journalToDelete.id).subscribe({
       next: () => {
-        this.notificationService.success('Journal supprimé', 'Le journal a été supprimé avec succès!');
+        this.notificationService.success('Entrée supprimée', "L'entrée du journal a été supprimée.");
         this.loadJournals();
-        this.closeView();
+        this.closeModalDeleteJournal();
       },
       error: (error) => {
         this.notificationService.error('Erreur', apiErrorMessage(error, 'Une erreur est survenue lors de la suppression du journal.'));
-        this.closeView();
+        this.closeModalDeleteJournal();
+        this.cdr.detectChanges();
       }
     });
   }
 
 
-  openView(j: any) {
+  openView(j: JournalModel) {
     this.selectedJournal = j;
     this.modalViewOpen = true;
   }

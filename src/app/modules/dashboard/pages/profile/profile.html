@@ -3,30 +3,31 @@
 <div class="container mx-auto px-4 py-6 space-y-6">
 
   <!-- Alerte profil incomplet -->
-  <div *ngIf="showIncompleteAlert"
-    class="rounded-xl border border-orange-200 bg-orange-50 p-4 flex items-start gap-3">
-    <span class="text-2xl">⚠️</span>
-    <div>
-      <p class="font-semibold text-orange-700">Complétez votre profil pour continuer</p>
-      <ul class="text-sm text-orange-600 mt-1 list-disc list-inside">
+  <div *ngIf="showIncompleteAlert" role="alert"
+    class="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+    <app-icon name="exclamation-triangle" class="mt-0.5 h-5 w-5" />
+    <div class="min-w-0">
+      <p class="font-semibold">Complétez votre profil pour continuer</p>
+      <ul class="mt-1 list-inside list-disc text-sm">
         <li *ngIf="missingProfile">Vos informations personnelles sont incomplètes.</li>
         <li *ngIf="missingEntreprise">
           Les informations de votre entreprise ne sont pas renseignées.
-          <a routerLink="/dashboard/entreprise" class="underline font-medium">Renseigner l'entreprise →</a>
+          <a routerLink="/dashboard/entreprise" class="font-medium underline">Renseigner l'entreprise</a>
         </li>
       </ul>
     </div>
   </div>
 
   <!-- Header -->
-  <div class="flex items-center justify-between rounded-xl bg-background p-4 border border-border/50 shadow-sm">
+  <div class="card flex flex-wrap items-center justify-between gap-4 p-4">
     <div>
       <h1 class="text-2xl font-semibold text-foreground">Mon Profil</h1>
       <p class="text-sm text-muted-foreground mt-1">Gérez vos informations personnelles.</p>
     </div>
     <button *ngIf="!isEditing && !loading"
       (click)="openEdit()"
-      class="px-4 py-2 bg-primary text-white rounded-md text-sm hover:bg-primary/90 transition">
+      class="btn-primary">
+      <app-icon name="pencil" class="h-4 w-4" />
       Modifier
     </button>
   </div>
@@ -43,23 +44,21 @@
 
     <!-- Avatar -->
     <div class="lg:col-span-1">
-      <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm text-center space-y-4">
+      <div class="card space-y-4 p-6 text-center">
 
         <div class="w-20 h-20 rounded-full bg-primary/10 text-primary flex items-center justify-center text-2xl font-bold mx-auto">
           {{ initiales }}
         </div>
 
-        <div>
-          <p class="font-semibold text-foreground text-lg">{{ profile?.prenom }} {{ profile?.nom }}</p>
-          <p class="text-sm text-muted-foreground">{{ profile?.email }}</p>
+        <div class="min-w-0">
+          <p class="break-words text-lg font-semibold text-foreground">{{ profile?.prenom }} {{ profile?.nom }}</p>
+          <p class="truncate text-sm text-muted-foreground" [title]="profile?.email">{{ profile?.email }}</p>
         </div>
 
-        <div [ngClass]="isProfileComplete
-          ? 'bg-green-100 text-green-700'
-          : 'bg-orange-100 text-orange-700'"
-          class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium">
-          <span>{{ isProfileComplete ? '✅ Profil complet' : '⚠️ Profil incomplet' }}</span>
-        </div>
+        <span [ngClass]="isProfileComplete ? 'badge-success' : 'badge-warning'">
+          <app-icon [name]="isProfileComplete ? 'check-circle' : 'exclamation-triangle'" class="h-4 w-4" />
+          {{ isProfileComplete ? 'Profil complet' : 'Profil incomplet' }}
+        </span>
 
         <div class="text-left space-y-2 pt-2 border-t border-border">
           <div>
@@ -81,7 +80,7 @@
 
     <!-- Infos -->
     <div class="lg:col-span-2">
-      <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm space-y-5">
+      <div class="card space-y-5 p-6">
 
         <h2 class="text-base font-semibold text-foreground">Informations personnelles</h2>
 
@@ -100,7 +99,7 @@
 
           <div class="sm:col-span-2">
             <p class="text-xs text-muted-foreground">Email</p>
-            <p class="text-sm font-medium text-foreground">{{ profile?.email || '—' }}</p>
+            <p class="break-all text-sm font-medium text-foreground">{{ profile?.email || '—' }}</p>
           </div>
 
           <div>
@@ -126,32 +125,45 @@
         </div>
 
         <!-- MODE EDIT -->
-        <div *ngIf="isEditing" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-          <input type="text" [(ngModel)]="prenom" placeholder="Prénom" class="input input-bordered w-full" />
-          <input type="text" [(ngModel)]="nom" placeholder="Nom" class="input input-bordered w-full" />
-
-          <input type="email" [(ngModel)]="email" placeholder="Email" class="input input-bordered w-full sm:col-span-2" />
-
-          <input type="text" [(ngModel)]="filiere" placeholder="Filière" class="input input-bordered w-full" />
-          <input type="text" [(ngModel)]="annee" placeholder="Année" class="input input-bordered w-full" />
-
-          <input type="text" [(ngModel)]="type_stage" placeholder="Type de stage" class="input input-bordered w-full" />
-
-          <input type="date" [(ngModel)]="date_debut" class="input input-bordered w-full" />
-          <input type="date" [(ngModel)]="date_fin" class="input input-bordered w-full" />
+        <div *ngIf="isEditing" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="form__group mb-0">
+            <label for="prenom">Prénom</label>
+            <input id="prenom" type="text" [(ngModel)]="prenom" class="form__input" />
+          </div>
+          <div class="form__group mb-0">
+            <label for="nom">Nom</label>
+            <input id="nom" type="text" [(ngModel)]="nom" class="form__input" />
+          </div>
+          <div class="form__group mb-0 sm:col-span-2">
+            <label for="email">Email</label>
+            <input id="email" type="email" [(ngModel)]="email" class="form__input" />
+          </div>
+          <div class="form__group mb-0">
+            <label for="filiere">Filière</label>
+            <input id="filiere" type="text" [(ngModel)]="filiere" class="form__input" />
+          </div>
+          <div class="form__group mb-0">
+            <label for="annee">Année</label>
+            <input id="annee" type="text" [(ngModel)]="annee" class="form__input" />
+          </div>
+          <div class="form__group mb-0 sm:col-span-2">
+            <label for="type_stage">Type de stage</label>
+            <input id="type_stage" type="text" [(ngModel)]="type_stage" class="form__input" />
+          </div>
+          <div class="form__group mb-0">
+            <label for="date_debut">Date de début du stage</label>
+            <input id="date_debut" type="date" [(ngModel)]="date_debut" class="form__input" />
+          </div>
+          <div class="form__group mb-0">
+            <label for="date_fin">Date de fin du stage</label>
+            <input id="date_fin" type="date" [(ngModel)]="date_fin" [attr.min]="date_debut || null" class="form__input" />
+          </div>
 
           <!-- Actions -->
-          <div class="sm:col-span-2 flex justify-end gap-3 pt-2">
-            <button (click)="cancelEdit()"
-              class="px-4 py-2 text-sm rounded-md border border-border text-muted-foreground hover:bg-muted transition">
-              Annuler
-            </button>
-
-            <button (click)="saveProfile()"
-              [disabled]="saving"
-              class="px-4 py-2 text-sm rounded-md bg-primary text-white hover:bg-primary/90 disabled:opacity-50 transition">
-              {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+          <div class="form__actions sm:col-span-2">
+            <button (click)="cancelEdit()" class="btn-secondary">Annuler</button>
+            <button (click)="saveProfile()" [disabled]="saving" class="btn-primary">
+              {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
             </button>
           </div>
 

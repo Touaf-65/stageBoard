@@ -11,11 +11,10 @@
     <div *ngIf="!loading">
 
         <!-- Header -->
-        <div
-            class="flex items-center justify-between mb-6 rounded-xl bg-background p-4 border border-border/50 shadow-sm">
+        <div class="card mb-6 p-4">
             <div>
                 <h1 class="text-2xl font-semibold text-foreground">
-                    Bonjour {{ profile?.prenom || 'Stagiaire' }} 👋
+                    Bonjour {{ profile?.prenom || 'Stagiaire' }}
                 </h1>
                 <p class="text-sm text-muted-foreground mt-1">
                     Voici un aperçu de votre stage aujourd'hui.
@@ -29,15 +28,15 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
             <!-- Jours restants -->
-            <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm hover:shadow-md transition">
+            <div class="card p-6 transition-shadow hover:shadow-md">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-muted-foreground">Jours restants</p>
                         <p class="text-2xl font-bold text-foreground">{{ joursRestants }}</p>
                         <p class="text-xs text-muted-foreground mt-1">Jusqu'à la fin du stage</p>
                     </div>
-                    <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-full">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="shrink-0 rounded-full bg-primary/10 p-3">
+                        <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4l3 3M12 2a10 10 0 100 20 10 10 0 000-20z" />
                         </svg>
@@ -46,19 +45,19 @@
             </div>
 
             <!-- Prochaine échéance -->
-            <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm hover:shadow-md transition">
+            <div class="card p-6 transition-shadow hover:shadow-md">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-muted-foreground">Prochaine échéance</p>
                         <p class="text-2xl font-bold text-foreground">
                             {{ prochaineEcheance ? (prochaineEcheance.date_limite | date) : '—' }}
                         </p>
-                        <p class="text-xs text-yellow-600 mt-1">
-                            {{ prochaineEcheance ? 'Dans ' + joursAvantEcheance + ' jours' : 'Aucune échéance' }}
+                        <p class="text-xs text-muted-foreground mt-1">
+                            {{ prochaineEcheance ? delaiEcheanceLabel : 'Aucune échéance' }}
                         </p>
                     </div>
-                    <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-full">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="shrink-0 rounded-full bg-primary/10 p-3">
+                        <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
@@ -67,15 +66,15 @@
             </div>
 
             <!-- Échéances en attente -->
-            <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm hover:shadow-md transition">
+            <div class="card p-6 transition-shadow hover:shadow-md">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-muted-foreground">Échéances</p>
                         <p class="text-2xl font-bold text-foreground">{{ echeancesEnAttente }}</p>
                         <p class="text-xs text-muted-foreground mt-1">En attente</p>
                     </div>
-                    <div class="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-full">
-                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="shrink-0 rounded-full bg-primary/10 p-3">
+                        <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
                         </svg>
@@ -83,22 +82,18 @@
                 </div>
             </div>
 
-            <!-- ✅ Card statut avancement -->
-            <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm hover:shadow-md transition">
+            <!-- Avancement du stage -->
+            <div class="card p-6 transition-shadow hover:shadow-md">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-muted-foreground">Avancement stage</p>
                         <p class="text-2xl font-bold text-foreground">{{ progressionStage }}%</p>
-                        <p class="text-xs mt-1" [ngClass]="{
-            'text-red-500': progressionStage < 30,
-            'text-yellow-600': progressionStage >= 30 && progressionStage < 70,
-            'text-green-600': progressionStage >= 70
-          }">
+                        <p class="text-xs mt-1 text-muted-foreground">
                             {{ progressionStage < 30 ? 'Début de stage' : progressionStage < 70 ? 'En cours'
                                 : 'Fin de stage' }} </p>
                     </div>
-                    <div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-full">
-                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="shrink-0 rounded-full bg-primary/10 p-3">
+                        <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
@@ -112,45 +107,43 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
 
             <!-- Prochaine échéance détail -->
-            <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm hover:shadow-md transition">
+            <div class="card p-6 transition-shadow hover:shadow-md">
                 <p class="text-sm font-medium text-muted-foreground mb-4">Prochaine échéance</p>
 
                 <ng-container *ngIf="prochaineEcheance; else noEcheance">
-                    <div class="flex items-start justify-between mb-3">
-                        <div>
-                            <h3 class="text-lg font-semibold text-foreground">{{ prochaineEcheance.titre }}</h3>
+                    <div class="flex items-start justify-between gap-3 mb-3">
+                        <div class="min-w-0">
+                            <h3 class="truncate text-lg font-semibold text-foreground" [title]="prochaineEcheance.titre">{{ prochaineEcheance.titre }}</h3>
                             <p class="text-sm text-muted-foreground mt-1">
                                 {{ prochaineEcheance.date_limite | date }}
                             </p>
                         </div>
-                        <span class="text-xs font-medium px-3 py-1 rounded-full" [ngClass]="badgeEcheanceClass">
-                            Dans {{ joursAvantEcheance }} jours
-                        </span>
+                        <span [ngClass]="badgeEcheanceClass">{{ delaiEcheanceLabel }}</span>
                     </div>
-                    <p class="text-sm text-muted-foreground mb-4 line-clamp-2">{{ prochaineEcheance.description }}</p>
+                    <p class="text-sm text-muted-foreground mb-4 line-clamp-2 break-words">{{ prochaineEcheance.description }}</p>
                 </ng-container>
 
                 <ng-template #noEcheance>
-                    <p class="text-sm text-muted-foreground py-4 text-center">Aucune échéance à venir 🎉</p>
+                    <p class="text-sm text-muted-foreground py-4 text-center">Aucune échéance à venir.</p>
                 </ng-template>
 
                 <hr class="mb-3">
-                <a routerLink="/dashboard/echeances"
-                    class="text-sm font-medium text-blue-600 hover:underline flex items-center gap-1">
-                    Voir toutes les échéances →
+                <a routerLink="/dashboard/echeance" class="btn-link">
+                    Voir toutes les échéances
+                    <app-icon name="arrow-right" class="h-4 w-4" />
                 </a>
             </div>
 
             <!-- Dernier journal -->
-            <div class="rounded-xl bg-background p-6 border border-border/50 shadow-sm hover:shadow-md transition">
+            <div class="card p-6 transition-shadow hover:shadow-md">
                 <p class="text-sm font-medium text-muted-foreground mb-4">Dernière entrée de journal</p>
 
                 <ng-container *ngIf="dernierJournal; else noJournal">
-                    <h3 class="text-lg font-semibold text-foreground">{{ dernierJournal.titre }}</h3>
+                    <h3 class="truncate text-lg font-semibold text-foreground" [title]="dernierJournal.titre">{{ dernierJournal.titre }}</h3>
                     <p class="text-sm text-muted-foreground mt-1 mb-3">
                         {{ dernierJournal.date_entree | date }}
                     </p>
-                    <p class="text-sm text-muted-foreground mb-4 line-clamp-2">{{ dernierJournal.description }}</p>
+                    <p class="text-sm text-muted-foreground mb-4 line-clamp-2 break-words">{{ dernierJournal.description }}</p>
                 </ng-container>
 
                 <ng-template #noJournal>
@@ -159,27 +152,23 @@
                 </ng-template>
 
                 <hr class="mb-3">
-                <a routerLink="/dashboard/journal"
-                    class="text-sm font-medium text-blue-600 hover:underline flex items-center gap-1">
-                    Voir le journal →
+                <a routerLink="/dashboard/journal" class="btn-link">
+                    Voir le journal
+                    <app-icon name="arrow-right" class="h-4 w-4" />
                 </a>
             </div>
 
         </div>
 
         <!-- Barre de progression -->
-        <div class="rounded-xl bg-background p-4 border border-border/50 shadow-sm">
+        <div class="card p-4">
             <div class="flex items-center justify-between mb-2">
                 <h3 class="text-sm font-medium text-muted-foreground">Progression globale du stage</h3>
                 <span class="text-sm font-semibold text-foreground">{{ progressionStage }}%</span>
             </div>
             <hr class="mb-3">
             <div class="w-full bg-muted rounded-full h-2.5 overflow-hidden">
-                <div class="h-2.5 rounded-full transition-all duration-500" [ngClass]="{
-            'bg-red-500': progressionStage < 30,
-            'bg-yellow-500': progressionStage >= 30 && progressionStage < 70,
-            'bg-green-500': progressionStage >= 70
-          }" [style.width.%]="progressionStage">
+                <div class="h-2.5 rounded-full bg-primary transition-all duration-500" [style.width.%]="progressionStage">
                 </div>
             </div>
             <div class="flex justify-between text-xs text-muted-foreground mt-2">

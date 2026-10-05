@@ -6,6 +6,7 @@ import { EntrepriseService, EntrepriseModel, EntrepriseRequest } from '../../ser
 import { NotificationService } from '../../../../shared/components/notification/notification.service';
 import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
 import { apiErrorMessage, isAuthError } from '../../../../shared/utils/api-error';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
 
 const FIELD_LABELS: Record<string, string> = {
   nom: "Nom de l'entreprise",
@@ -19,7 +20,7 @@ const FIELD_LABELS: Record<string, string> = {
 @Component({
   standalone: true,
   selector: 'app-entreprise',
-  imports: [CommonModule, FormsModule, NotificationComponent],
+  imports: [CommonModule, FormsModule, NotificationComponent, IconComponent],
   templateUrl: './entreprise.html',
   styleUrl: './entreprise.scss',
 })

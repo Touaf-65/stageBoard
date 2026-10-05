@@ -1,239 +1,184 @@
 <app-notifications></app-notifications>
 
-<div class="container mx-auto px-4 py-6 space-y-8">
+<div class="container mx-auto space-y-6 px-4 py-6">
 
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6 rounded-xl bg-background p-4 border border-border/50 shadow-sm">
-
-        <div>
+    <div class="card flex flex-wrap items-center justify-between gap-4 p-4">
+        <div class="min-w-0">
             <h1 class="text-2xl font-semibold text-foreground">Échéances</h1>
-            <p class="text-sm text-muted-foreground mt-1">
+            <p class="mt-1 text-sm text-muted-foreground">
                 Gérez toutes vos échéances et ne manquez rien d’important.
             </p>
         </div>
 
-        <button
-            class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm transition"
-            (click)="openModalCreateEcheance()">
-            + Ajouter une échéance
+        <button class="btn-primary" (click)="openModalCreateEcheance()">
+            <app-icon name="plus" class="h-4 w-4" />
+            Ajouter une échéance
         </button>
-
     </div>
 
-    <!-- Filtres Tabs -->
-    <div class="flex gap-2 mb-6">
-
-        <button (click)="setTab('Toutes')" [ngClass]="activeTab === 'Toutes' 
-      ? 'bg-blue-100 text-blue-600 font-medium' 
-      : 'text-muted-foreground hover:bg-muted'" class="px-4 py-2 text-sm rounded-lg transition">
-            Toutes
-            <span class="ml-1 text-xs bg-blue-200 text-blue-700 px-1.5 py-0.5 rounded-full">
-                {{ echeances.length }}
-            </span>
-        </button>
-
-        <button (click)="setTab('A venir')" [ngClass]="activeTab === 'A venir' 
-      ? 'bg-blue-100 text-blue-600 font-medium' 
-      : 'text-muted-foreground hover:bg-muted'" class="px-4 py-2 text-sm rounded-lg transition">
-            À venir
-            <span class="ml-1 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">
-                {{ countAvenir }}
-            </span>
-        </button>
-
-        <button (click)="setTab('Fait')" [ngClass]="activeTab === 'Fait' 
-      ? 'bg-green-100 text-green-600 font-medium' 
-      : 'text-muted-foreground hover:bg-muted'" class="px-4 py-2 text-sm rounded-lg transition">
-            Terminées
-            <span class="ml-1 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">
-                {{ countFait }}
-            </span>
-        </button>
-
-        <button (click)="setTab('En retard')" [ngClass]="activeTab === 'En retard' 
-      ? 'bg-red-100 text-red-600 font-medium' 
-      : 'text-muted-foreground hover:bg-muted'" class="px-4 py-2 text-sm rounded-lg transition">
-            En retard
-            <span class="ml-1 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">
-                {{ countEnRetard }}
-            </span>
-        </button>
-
+    <!-- Filtres : défilent horizontalement sur petit écran au lieu de déborder -->
+    <div class="-mx-4 overflow-x-auto px-4">
+        <div class="flex w-max gap-2" role="tablist">
+            <button *ngFor="let tab of tabs" (click)="setTab(tab.value)" role="tab"
+                [attr.aria-selected]="activeTab === tab.value"
+                [ngClass]="activeTab === tab.value
+                    ? 'bg-primary/10 text-primary font-medium'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'"
+                class="inline-flex items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 text-sm transition-colors">
+                {{ tab.label }}
+                <span [ngClass]="activeTab === tab.value ? 'badge-primary' : 'badge-neutral'">
+                    {{ tabCount(tab.value) }}
+                </span>
+            </button>
+        </div>
     </div>
 
-
-    <div class="space-y-4">
+    <div class="space-y-3">
 
         <!-- Aucun résultat -->
         <div *ngIf="filteredEcheances.length === 0"
-            class="flex flex-col items-center justify-center py-16 rounded-xl border border-border/50 bg-background text-muted-foreground">
+            class="card flex flex-col items-center justify-center gap-2 py-16 text-muted-foreground">
+            <app-icon name="calendar-days" class="h-8 w-8 text-muted-foreground/60" />
             <p class="text-sm">Aucune échéance {{ activeTab !== 'Toutes' ? 'dans cette catégorie' : '' }}.</p>
         </div>
 
-        <div *ngFor="let e of filteredEcheances; let i = index"
-            class="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-background shadow-sm hover:shadow-md transition">
+        <div *ngFor="let e of filteredEcheances"
+            class="card flex items-start gap-3 p-4 transition-shadow hover:shadow-md sm:items-center sm:gap-4">
 
-            <!-- LEFT -->
-            <div class="flex items-center gap-4">
-
-                <div class="p-2 rounded-lg bg-orange-100 text-orange-600">
-                    📄
-                </div>
-
-                <div>
-                    <p class="font-medium text-foreground">{{ e.titre }}</p>
-                    <p class="text-sm text-muted-foreground">
-                        {{ e.description }}
-                    </p>
-                </div>
-
+            <div class="hidden shrink-0 rounded-lg bg-primary/10 p-2 text-primary sm:block">
+                <app-icon name="document-text" class="h-5 w-5" />
             </div>
 
-            <!-- RIGHT -->
-            <div class="flex items-center gap-4">
-
-                <p class="text-sm text-muted-foreground">
-                    {{ e.date_limite | date }}
+            <!-- Texte : min-w-0 + truncate pour qu'un titre long ne pousse pas la date hors de la carte -->
+            <div class="min-w-0 flex-1">
+                <p class="truncate font-medium text-foreground" [title]="e.titre">{{ e.titre }}</p>
+                <p *ngIf="e.description" class="truncate text-sm text-muted-foreground" [title]="e.description">
+                    {{ e.description }}
                 </p>
+                <!-- Date et statut passent sous le texte sur mobile -->
+                <div class="mt-2 flex flex-wrap items-center gap-2 sm:hidden">
+                    <span class="text-xs text-muted-foreground">{{ e.date_limite | date }}</span>
+                    <span [ngClass]="statutBadge(e.statut)">{{ statutLabel(e.statut) }}</span>
+                </div>
+            </div>
 
-                <span class="text-xs px-3 py-1 rounded-full font-medium" [ngClass]="{
-              'bg-blue-100 text-blue-600': e.statut === 'A venir',
-              'bg-green-100 text-green-600': e.statut === 'Fait',
-              'bg-red-100 text-red-600': e.statut === 'En retard'
-            }">
-                    {{ e.statut }}
-                </span>
+            <div class="hidden shrink-0 items-center gap-4 sm:flex">
+                <span class="text-sm text-muted-foreground">{{ e.date_limite | date }}</span>
+                <span [ngClass]="statutBadge(e.statut)">{{ statutLabel(e.statut) }}</span>
+            </div>
 
-                <!-- ACTIONS -->
-                <button class="p-2 rounded-lg text-foreground hover:bg-muted" (click)="openMenu($event, e)">
-                    ⋮
+            <!-- Actions : menu rattaché à la ligne, aligné à droite -->
+            <div class="relative shrink-0">
+                <button class="btn-icon" (click)="openMenu($event, e)" aria-label="Actions"
+                    [attr.aria-expanded]="menuOpen && selectedEcheance?.id === e.id">
+                    <app-icon name="ellipsis-vertical" class="h-5 w-5" />
                 </button>
 
+                <div *ngIf="menuOpen && selectedEcheance?.id === e.id" (click)="$event.stopPropagation()"
+                    class="absolute right-0 top-full z-20 mt-1 w-44 overflow-hidden rounded-lg border border-border bg-background py-1 shadow-custom">
+                    <button class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-foreground hover:bg-muted"
+                        (click)="onEditFromMenu()">
+                        <app-icon name="pencil" class="h-4 w-4 text-muted-foreground" />
+                        Modifier
+                    </button>
+                    <button class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-destructive hover:bg-destructive/10"
+                        (click)="onDeleteFromMenu()">
+                        <app-icon name="trash" class="h-4 w-4" />
+                        Supprimer
+                    </button>
+                </div>
             </div>
 
         </div>
 
     </div>
-
-
 
 </div>
 
 <!-- Modal d'ajout échéance-->
-<app-modal [isOpen]="modalCreateOpen" [title]="'Créer une échéance'" [size]="'lg'" (close)="closeModalCreateEcheance()">
+<app-modal [isOpen]="modalCreateOpen" [title]="'Nouvelle échéance'" [size]="'lg'" (close)="closeModalCreateEcheance()">
     <!-- Recréé à chaque ouverture : les champs repartent des valeurs du composant -->
     <ng-container *ngIf="modalCreateOpen">
-    <div class="form__group">
-        <label for="titre">Titre</label>
-        <input type="text" id="titre" [(ngModel)]="titre" class="form__input">
-    </div>
-    <div class="form__group">
-        <label for="description">Description</label>
-        <textarea id="description" [(ngModel)]="description" class="form__input"></textarea>
-    </div>
-    <div class="flex flex-col md:flex-row gap-4 justify-between mb-4">
         <div class="form__group">
-            <label for="dueDate">Date limite</label>
-            <input type="date" id="dueDate" [(ngModel)]="date_limite" [attr.min]="createRange.min" [attr.max]="createRange.max" class="form__input">
+            <label for="titre">Titre</label>
+            <input type="text" id="titre" [(ngModel)]="titre" maxlength="200" class="form__input">
         </div>
         <div class="form__group">
-            <label for="statut">Statut</label>
-            <select id="statut" [(ngModel)]="statut" class="form__input">
-                <option value="A venir">À venir</option>
-                <option value="Fait">Fait</option>
-                <option value="En retard">En retard</option>
-            </select>
+            <label for="description">Description</label>
+            <textarea id="description" [(ngModel)]="description" class="form__input"></textarea>
         </div>
-    </div>
-    <hr>
-    <div class="flex justify-center gap-2 mt-4">
-        <button class="flex-none rounded-md bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground"
-            (click)="createEcheance()">Créer</button>
-        <button class="flex-none rounded-md bg-gray-900 px-4 py-2.5 text-xs font-semibold text-primary-foreground"
-            (click)="closeModalCreateEcheance()">Annuler</button>
-    </div>
-
+        <div class="flex flex-col gap-4 sm:flex-row">
+            <div class="form__group">
+                <label for="dueDate">Date limite</label>
+                <input type="date" id="dueDate" [(ngModel)]="date_limite" [attr.min]="createRange.min" [attr.max]="createRange.max" class="form__input">
+            </div>
+            <div class="form__group">
+                <label for="statut">Statut</label>
+                <select id="statut" [(ngModel)]="statut" class="form__input">
+                    <option value="A venir">À venir</option>
+                    <option value="Fait">Terminée</option>
+                    <option value="En retard">En retard</option>
+                </select>
+            </div>
+        </div>
+        <div class="form__actions">
+            <button class="btn-secondary" (click)="closeModalCreateEcheance()">Annuler</button>
+            <button class="btn-primary" (click)="createEcheance()">Créer</button>
+        </div>
     </ng-container>
 </app-modal>
 
 <!--Modal d'édition échéance-->
-<app-modal [isOpen]="modalEditOpen" [title]="'Modifier échéance'" [size]="'lg'" (close)="closeModalEditEcheance()">
+<app-modal [isOpen]="modalEditOpen" [title]="'Modifier l\'échéance'" [size]="'lg'" (close)="closeModalEditEcheance()">
     <!-- Recréé à chaque ouverture : les champs repartent des valeurs du composant -->
     <ng-container *ngIf="modalEditOpen">
-    <p class="text-lg text-justify text-red-700 dark:text-red-400">
-        Êtes-vous sûr de vouloir <span class="font-semibold text-red-600 dark:text-red-300">modifier l'échéance</span>
-        &nbsp;
-        <span class="font-bold text-slate-800 dark:text-white">{{ echeanceToEdit?.titre }}</span>&nbsp;?
-    </p>
-    <br>
-    <div class="form__group">
-        <label for="titre">Titre</label>
-        <input type="text" id="titre" [(ngModel)]="editTitre" class="form__input">
-    </div>
-    <div class="form__group">
-        <label for="description">Description</label>
-        <textarea id="description" [(ngModel)]="editDescription" class="form__input"></textarea>
-    </div>
-    <div class="flex flex-col md:flex-row gap-4 justify-between mb-4">
         <div class="form__group">
-            <label for="editDueDate">Date limite</label>
-            <input type="date" id="editDueDate" [(ngModel)]="editDate" [attr.min]="editRange.min" [attr.max]="editRange.max" class="form__input">
+            <label for="editTitre">Titre</label>
+            <input type="text" id="editTitre" [(ngModel)]="editTitre" maxlength="200" class="form__input">
         </div>
         <div class="form__group">
-            <label for="statut">Statut</label>
-            <select id="statut" [(ngModel)]="editStatut" class="form__input">
-                <option value="A venir">À venir</option>
-                <option value="Fait">Fait</option>
-                <option value="En retard">En retard</option>
-            </select>
+            <label for="editDescription">Description</label>
+            <textarea id="editDescription" [(ngModel)]="editDescription" class="form__input"></textarea>
         </div>
-    </div>
-    <hr>
-    <div class="flex justify-center gap-2 mt-4">
-        <button class="flex-none rounded-md bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground"
-            (click)="EditEcheance()">Modifier</button>
-        <button class="flex-none rounded-md bg-gray-900 px-4 py-2.5 text-xs font-semibold text-primary-foreground"
-            (click)="closeModalEditEcheance()">Annuler</button>
-    </div>
-
+        <div class="flex flex-col gap-4 sm:flex-row">
+            <div class="form__group">
+                <label for="editDueDate">Date limite</label>
+                <input type="date" id="editDueDate" [(ngModel)]="editDate" [attr.min]="editRange.min" [attr.max]="editRange.max" class="form__input">
+            </div>
+            <div class="form__group">
+                <label for="editStatut">Statut</label>
+                <select id="editStatut" [(ngModel)]="editStatut" class="form__input">
+                    <option value="A venir">À venir</option>
+                    <option value="Fait">Terminée</option>
+                    <option value="En retard">En retard</option>
+                </select>
+            </div>
+        </div>
+        <div class="form__actions">
+            <button class="btn-secondary" (click)="closeModalEditEcheance()">Annuler</button>
+            <button class="btn-primary" (click)="EditEcheance()">Enregistrer</button>
+        </div>
     </ng-container>
 </app-modal>
 
 
 <!-- Modal de confirmation de suppression-->
-<app-modal [isOpen]="modalDeleteOpen" [title]="'Supprimer échéance'" [size]="'md'" (close)="closeDelete()">
-
-    <p class="text-lg text-justify text-red-700 dark:text-red-400">
-        Êtes-vous sûr de vouloir <span class="font-semibold text-red-600 dark:text-red-300">supprimer l'échéance</span>
-        &nbsp;
-        <span class="font-bold text-slate-800 dark:text-white">{{ echeanceToDelete?.titre }}</span>&nbsp;?
-    </p>
-    <br>
-    <p class="text-xs text-gray-500 dark:text-zinc-300 mt-2">
-        Cette action supprimera définitivement l'échéance du système.
-    </p>
-    <br>
-    <hr>
-    <div class="flex justify-center gap-2 mt-4">
-        <button class="flex-none rounded-md bg-red-600 px-4 py-2.5 text-xs font-semibold text-white"
-            (click)="deleteEcheance()">Supprimer</button>
-        <button class="flex-none rounded-md bg-gray-900 px-4 py-2.5 text-xs font-semibold text-primary-foreground"
-            (click)="closeModalDeleteEcheance()">Annuler</button>
+<app-modal [isOpen]="modalDeleteOpen" [title]="'Supprimer l\'échéance'" [size]="'md'" (close)="closeModalDeleteEcheance()">
+    <div class="flex gap-3">
+        <div class="shrink-0 rounded-full bg-destructive/10 p-2 text-destructive">
+            <app-icon name="exclamation-triangle" class="h-5 w-5" />
+        </div>
+        <div class="min-w-0 text-sm">
+            <p class="text-foreground">
+                Voulez-vous vraiment supprimer l'échéance
+                <span class="break-words font-semibold">« {{ echeanceToDelete?.titre }} »</span> ?
+            </p>
+            <p class="mt-1 text-muted-foreground">Cette action est définitive.</p>
+        </div>
     </div>
-
+    <div class="form__actions mt-4">
+        <button class="btn-secondary" (click)="closeModalDeleteEcheance()">Annuler</button>
+        <button class="btn-danger" (click)="deleteEcheance()">Supprimer</button>
+    </div>
 </app-modal>
-
-<!-- Menu -->
-<div *ngIf="menuOpen" class="fixed z-50 bg-white dark:bg-gray-800 shadow-lg rounded-lg border w-40"
-    [style.top.px]="menuPosition.y" [style.left.px]="menuPosition.x">
-
-    <button class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" (click)="onEditFromMenu()">
-        Modifier
-    </button>
-
-    <button class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
-        (click)="onDeleteFromMenu()">
-        Supprimer
-    </button>
-
-</div>

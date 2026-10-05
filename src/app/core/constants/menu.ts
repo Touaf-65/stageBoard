@@ -1,77 +1,43 @@
-
 import {MenuItem} from "../models/menu.model";
 
 export class Menu{
   public static pages: MenuItem[] = [
     {
-      group: 'Base',
+      group: 'Mon stage',
       separator: false,
       items: [
         {
-          icon: '/assets/icons/heroicons/outline/chart-pie.svg',
-          label: 'Dashboard',
-          route: '/dashboard',
-          children: [
-            { label: 'Vue d\'ensemble', route: '/dashboard/vue' },
-          ],
+          icon: '/assets/icons/heroicons/outline/home.svg',
+          label: "Vue d'ensemble",
+          route: '/dashboard/vue',
         },
         {
-          icon: '/assets/icons/heroicons/outline/lock-closed.svg',
-          label: 'Auth',
-          route: '/auth',
-          children: [
-            { label: 'Sign in', route: '/auth/sign-in' },
-            { label: 'Sign up', route: '/auth/sign-up' },
-            { label: 'Forgot Password', route: '/auth/forgot-password' },
-            { label: 'New Password', route: '/auth/new-password' },
-          ],
+          icon: '/assets/icons/heroicons/outline/calendar-days.svg',
+          label: 'Échéances',
+          route: '/dashboard/echeance',
+        },
+        {
+          icon: '/assets/icons/heroicons/outline/book-open.svg',
+          label: 'Journal de bord',
+          route: '/dashboard/journal',
         },
       ],
     },
     {
-      group: 'Echéances',
+      group: 'Informations',
       separator: false,
       items: [
         {
-          icon: '/assets/icons/heroicons/outline/chart-pie.svg',
-          label: 'Echéances',
-          route: 'dashboard/echeance',
-        }
-      ],
-    },
-    {
-      group: 'Journal',
-      separator: false,
-      items: [
-        {
-          icon: '/assets/icons/heroicons/outline/chart-pie.svg',
-          label: 'Journal de Bord',
-          route: 'dashboard/journal',
-        }
-      ],
-    },
-    {
-      group: 'Entreprise',
-      separator: false,
-      items: [
-        {
-          icon: '/assets/icons/heroicons/outline/chart-pie.svg',
+          icon: '/assets/icons/heroicons/outline/building-office.svg',
           label: 'Entreprise',
-          route: 'dashboard/entreprise',
-        }
-      ],
-    },
-    {
-      group: 'Profile',
-      separator: false,
-      items: [
+          route: '/dashboard/entreprise',
+        },
         {
-          icon: '/assets/icons/heroicons/outline/chart-pie.svg',
-          label: 'Profile',
-          route: 'dashboard/profile',
-        }
+          icon: '/assets/icons/heroicons/outline/user-circle.svg',
+          label: 'Profil',
+          route: '/dashboard/profile',
+        },
       ],
     },
-   
   ];
 }

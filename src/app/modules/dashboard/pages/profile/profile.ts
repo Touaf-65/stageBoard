@@ -8,6 +8,7 @@ import { NotificationComponent } from '../../../../shared/components/notificatio
 import { NotificationService } from '../../../../shared/components/notification/notification.service';
 import { UserService } from '../../../authentication/services/user/user.service';
 import { apiErrorMessage, isAuthError } from '../../../../shared/utils/api-error';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
 
 const FIELD_LABELS: Record<string, string> = {
   nom: 'Nom',
@@ -23,7 +24,7 @@ const FIELD_LABELS: Record<string, string> = {
 @Component({
   standalone: true,
   selector: 'app-profile',
-  imports: [CommonModule, FormsModule, NotificationComponent, RouterLink],
+  imports: [CommonModule, FormsModule, NotificationComponent, RouterLink, IconComponent],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
 })

@@ -3,10 +3,9 @@ import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { animate, state, style, transition, trigger } from "@angular/animations";
 import { ThemeService } from "../../../../../core/services/theme.service";
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ClickOutsideDirective } from '../../../../../shared/directives/click-outside.directive';
 import { SvgIconComponent } from 'angular-svg-icon';
-import { Action } from 'rxjs/internal/scheduler/Action';
 import { UserService } from '../../../../authentication/services/user/user.service';
 import { NotificationService } from '../../../../../shared/components/notification/notification.service';
 import { timer } from 'rxjs';
@@ -47,13 +46,13 @@ export class ProfileMenuComponent implements OnInit {
   public currentUser: any = null;
   public profileMenu = [
     {
-      title: 'Profile',
+      title: 'Mon profil',
       icon: '/assets/icons/heroicons/outline/user-circle.svg',
-      link: 'dashboard/profile',
+      link: '/dashboard/profile',
       action: null,
     },
     {
-      title: 'Log out',
+      title: 'Se déconnecter',
       icon: '/assets/icons/heroicons/outline/logout.svg',
       link: 'null',
       action: 'logout',
@@ -62,29 +61,37 @@ export class ProfileMenuComponent implements OnInit {
   public themeColors = [
     {
       name: 'base',
+      label: 'Rose',
       code: '#e11d48',
     },
 
     {
       name: 'red',
+      label: 'Rouge',
       code: '#cc0022',
     },
     {
       name: 'blue',
+      label: 'Bleu',
       code: '#007bff',
     },
 
     {
       name: 'green',
+      label: 'Vert',
       code: '#28a745',
     }
   ];
-  public themeMode = ['light', 'dark'];
+  public themeMode = [
+    { value: 'light', label: 'Clair' },
+    { value: 'dark', label: 'Sombre' },
+  ];
 
   constructor(
     public themeService: ThemeService,
     public userService: UserService,
-    public notificationService: NotificationService) {
+    public notificationService: NotificationService,
+    private router: Router) {
   }
 
   ngOnInit(): void {
@@ -99,8 +106,9 @@ export class ProfileMenuComponent implements OnInit {
     if (action === 'logout') {
       this.logout();
     } else if (link) {
-      // Navigation normale pour les autres liens
-      window.location.href = link;
+      // Navigation interne (sans recharger l'application)
+      this.isOpen = false;
+      this.router.navigateByUrl(link);
     }
   }
 
@@ -116,11 +124,9 @@ export class ProfileMenuComponent implements OnInit {
     });
   }
 
-  toggleThemeMode() {
-    this.themeService.theme.update((theme) => {
-      const mode = !this.themeService.isDark ? 'dark' : 'light';
-      return { ...theme, mode: mode };
-    });
+  // Applique le mode choisi (avant : inversait le mode quel que soit le bouton cliqué)
+  setThemeMode(mode: string) {
+    this.themeService.theme.update((theme) => ({ ...theme, mode }));
   }
   toggleThemeColor(color: string) {
     this.themeService.theme.update((theme) => {

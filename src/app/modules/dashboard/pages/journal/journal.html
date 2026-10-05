@@ -1,133 +1,103 @@
 <app-notifications></app-notifications>
 
-<div class="container mx-auto px-4 py-6 space-y-8">
+<div class="container mx-auto space-y-6 px-4 py-6">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6 rounded-xl bg-background p-4 border border-border/50 shadow-sm">
-
-        <div>
-            <h1 class="text-2xl font-semibold text-foreground">
-                Journal de bord
-            </h1>
-            <p class="text-sm text-muted-foreground mt-1">
-                Consignez vos activités, compétences et difficultés chaque semaine.
+    <div class="card flex flex-wrap items-center justify-between gap-4 p-4">
+        <div class="min-w-0">
+            <h1 class="text-2xl font-semibold text-foreground">Journal de bord</h1>
+            <p class="mt-1 text-sm text-muted-foreground">
+                Consignez vos activités, compétences et difficultés au fil du stage.
             </p>
         </div>
 
-        <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition"
-            (click)="openModalCreateJournal()">
-            + Nouvelle entrée
+        <button class="btn-primary" (click)="openModalCreateJournal()">
+            <app-icon name="plus" class="h-4 w-4" />
+            Nouvelle entrée
         </button>
-
     </div>
 
     <!-- Contenu -->
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
 
         <!-- Filtres -->
         <div class="lg:col-span-1">
+            <div class="card space-y-4 p-5">
+                <h3 class="text-sm font-semibold text-foreground">Filtres</h3>
 
-            <div class="rounded-xl border border-border/50 bg-background p-5 shadow-sm">
-
-                <h3 class="text-sm font-semibold text-foreground mb-4">Filtres</h3>
-
-                <!-- Période -->
-                <div class="mb-4">
-                    <label class="text-xs text-muted-foreground">Période</label>
-                    <select [(ngModel)]="selectedPeriode" (ngModelChange)="applyFilters()"
-                        class="w-full mt-1 px-3 py-2 border border-border rounded-lg bg-background text-sm">
+                <div>
+                    <label for="filtrePeriode" class="text-xs text-muted-foreground">Période</label>
+                    <select id="filtrePeriode" [(ngModel)]="selectedPeriode" (ngModelChange)="applyFilters()"
+                        class="mt-1 text-sm capitalize">
                         <option value="">Toutes les périodes</option>
                         <option *ngFor="let p of periodes" [value]="p">{{ p }}</option>
                     </select>
                 </div>
 
-                <!-- Recherche -->
-                <div class="mb-4">
-                    <label class="text-xs text-muted-foreground">Recherche</label>
-                    <input type="text" [(ngModel)]="searchText" (ngModelChange)="applyFilters()"
-                        placeholder="Rechercher..."
-                        class="w-full mt-1 px-3 py-2 border border-border rounded-lg text-sm" />
+                <div>
+                    <label for="filtreRecherche" class="text-xs text-muted-foreground">Recherche</label>
+                    <input id="filtreRecherche" type="search" [(ngModel)]="searchText" (ngModelChange)="applyFilters()"
+                        placeholder="Titre ou description…" class="mt-1 text-sm" />
                 </div>
 
-                <!-- Reset -->
-                <button (click)="resetFilters()" class="text-sm text-blue-600 hover:underline flex items-center gap-1">
-                    ↻ Réinitialiser
+                <button (click)="resetFilters()" class="btn-link">
+                    <app-icon name="arrow-path" class="h-4 w-4" />
+                    Réinitialiser
                 </button>
-
             </div>
-
         </div>
 
         <!-- Liste -->
-        <div class="lg:col-span-3 space-y-4">
+        <div class="space-y-3 lg:col-span-3">
 
             <!-- Aucun résultat -->
             <div *ngIf="filteredJournals.length === 0"
-                class="flex flex-col items-center justify-center py-16 rounded-xl border border-border/50 bg-background text-muted-foreground">
-                <p class="text-lg">Aucun journal trouvé.</p>
-                <button *ngIf="searchText || selectedPeriode" (click)="resetFilters()"
-                    class="mt-5 text-sm text-blue-600 hover:underline">
+                class="card flex flex-col items-center justify-center gap-2 py-16 text-muted-foreground">
+                <app-icon name="book-open" class="h-8 w-8 text-muted-foreground/60" />
+                <p class="text-sm">
+                    {{ journals.length === 0 ? 'Aucune entrée pour le moment.' : 'Aucune entrée ne correspond aux filtres.' }}
+                </p>
+                <button *ngIf="searchText || selectedPeriode" (click)="resetFilters()" class="btn-link mt-2">
                     Réinitialiser les filtres
                 </button>
             </div>
 
-            <!-- ITEM -->
+            <button type="button" *ngFor="let journal of filteredJournals" (click)="openView(journal)"
+                class="card flex w-full items-center gap-4 p-4 text-left transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
 
-            <div *ngFor="let journal of filteredJournals"
-                class="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-background shadow-sm hover:shadow-md transition cursor-pointer"
-                (click)="openView(journal)">
-
-                <!-- LEFT -->
-                <div class="flex items-center gap-4">
-
-                    <!-- DATE -->
-                    <div class="text-center w-12 shrink-0">
-                        <p class="text-lg font-bold text-foreground">
-                            {{ journal.date_entree | date:'dd' }}
-                        </p>
-                        <p class="text-xs text-muted-foreground uppercase">
-                            {{ journal.date_entree | date:'MM/yy' }}
-                        </p>
-                    </div>
-
-                    <!-- CONTENT -->
-                    <div>
-                        <p class="font-medium text-foreground">
-                            {{ journal.titre }}
-                        </p>
-                        <p class="text-sm text-muted-foreground">
-                            {{ journal.description }}
-                        </p>
-                    </div>
-
+                <!-- Date (une seule fois par ligne) -->
+                <div class="w-12 shrink-0 rounded-lg bg-primary/10 py-1.5 text-center text-primary">
+                    <p class="text-lg font-bold leading-tight">{{ journal.date_entree | date:'dd' }}</p>
+                    <p class="text-[11px] font-medium leading-tight">{{ journal.date_entree | date:'MM/yy' }}</p>
                 </div>
 
-                <!-- RIGHT -->
-                <div class="flex items-center gap-4">
-
-                    <p class="text-sm text-muted-foreground">
-                        {{ journal.date_entree | date }}
+                <!-- Texte tronqué : un contenu long ne déborde plus de la carte -->
+                <div class="min-w-0 flex-1">
+                    <p class="truncate font-medium text-foreground">{{ journal.titre }}</p>
+                    <p *ngIf="journal.description" class="line-clamp-2 break-words text-sm text-muted-foreground">
+                        {{ journal.description }}
                     </p>
-
-                    <span class="text-muted-foreground">›</span>
-
                 </div>
 
-            </div>
+                <app-icon name="chevron-right" class="h-5 w-5 text-muted-foreground" />
+            </button>
 
         </div>
     </div>
 
 
-    <app-modal [isOpen]="modalCreateOpen" [title]="'Nouvelle entrée journal'" [size]="'lg'"
+    <app-modal [isOpen]="modalCreateOpen" [title]="'Nouvelle entrée'" [size]="'lg'"
         (close)="closeModalCreateJournal()">
         <!-- Recréé à chaque ouverture : les champs repartent des valeurs du composant -->
         <ng-container *ngIf="modalCreateOpen">
-
-        <div class="space-y-4">
-
-            <div class="form__group">
-                <label for="titre">Titre</label>
-                <input type="text" id="titre" [(ngModel)]="titre" class="form__input">
+            <div class="flex flex-col gap-4 sm:flex-row">
+                <div class="form__group sm:flex-[2]">
+                    <label for="titre">Titre</label>
+                    <input type="text" id="titre" [(ngModel)]="titre" class="form__input">
+                </div>
+                <div class="form__group sm:flex-1">
+                    <label for="date_entree">Date</label>
+                    <input type="date" id="date_entree" [(ngModel)]="date_entree" [attr.min]="dateRange.min" [attr.max]="dateRange.max" class="form__input">
+                </div>
             </div>
 
             <div class="form__group">
@@ -136,139 +106,128 @@
             </div>
 
             <div class="form__group">
-                <label for="taches">Tâches</label>
+                <label for="taches">Tâches réalisées</label>
                 <textarea id="taches" [(ngModel)]="taches" class="form__input"></textarea>
             </div>
 
             <div class="form__group">
                 <label for="difficultes">Difficultés rencontrées</label>
-                <textarea id="difficulté" [(ngModel)]="difficultes" class="form__input"></textarea>
+                <textarea id="difficultes" [(ngModel)]="difficultes" class="form__input"></textarea>
             </div>
+
             <div class="form__group">
                 <label for="competences">Compétences acquises</label>
                 <textarea id="competences" [(ngModel)]="competences" class="form__input"></textarea>
             </div>
 
-            <div class="form__group">
-                <label for="date_entree">Date </label>
-                <input type="date" id="date_entree" [(ngModel)]="date_entree" [attr.min]="dateRange.min" [attr.max]="dateRange.max" class="form__input">
+            <div class="form__actions">
+                <button class="btn-secondary" (click)="closeModalCreateJournal()">Annuler</button>
+                <button class="btn-primary" (click)="createJournal()">Ajouter</button>
             </div>
-
-            <div class="flex justify-center gap-2 mt-4">
-                <button
-                    class="flex-none rounded-md bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground"
-                    (click)="createJournal()">Créer</button>
-                <button
-                    class="flex-none rounded-md bg-gray-900 px-4 py-2.5 text-xs font-semibold text-primary-foreground"
-                    (click)="closeModalCreateJournal()">Annuler</button>
-            </div>
-
-        </div>
-
         </ng-container>
     </app-modal>
 
-    <app-modal [isOpen]="modalEditOpen" [title]="'Modifier une entrée journal'" [size]="'lg'"
+    <app-modal [isOpen]="modalEditOpen" [title]="'Modifier l\'entrée'" [size]="'lg'"
         (close)="closeModalEditJournal()">
         <!-- Recréé à chaque ouverture : les champs repartent des valeurs du composant -->
         <ng-container *ngIf="modalEditOpen">
-        <p class="text-lg text-justify text-red-700 dark:text-red-400">
-            Êtes-vous sûr de vouloir <span class="font-semibold text-red-600 dark:text-red-300">modifier
-                l'échéance</span>
-            &nbsp;
-            <span class="font-bold text-slate-800 dark:text-white">{{ journalToEdit?.titre }}</span>&nbsp;?
-        </p>
-        <br>
+            <div class="flex flex-col gap-4 sm:flex-row">
+                <div class="form__group sm:flex-[2]">
+                    <label for="editTitre">Titre</label>
+                    <input type="text" id="editTitre" [(ngModel)]="editTitre" class="form__input">
+                </div>
+                <div class="form__group sm:flex-1">
+                    <label for="edit_date_entree">Date</label>
+                    <input type="date" id="edit_date_entree" [(ngModel)]="editDate" [attr.min]="dateRange.min" [attr.max]="dateRange.max" class="form__input">
+                </div>
+            </div>
 
-        <div class="form__group">
-            <label for="titre">Titre</label>
-            <input type="text" id="titre" [(ngModel)]="editTitre" class="form__input">
-        </div>
+            <div class="form__group">
+                <label for="editDescription">Description</label>
+                <textarea id="editDescription" [(ngModel)]="editDescription" maxlength="500" class="form__input"></textarea>
+            </div>
 
-        <div class="form__group">
-            <label for="description">Description</label>
-            <textarea id="description" [(ngModel)]="editDescription" maxlength="500" class="form__input"></textarea>
-        </div>
+            <div class="form__group">
+                <label for="editTaches">Tâches réalisées</label>
+                <textarea id="editTaches" [(ngModel)]="editTaches" class="form__input"></textarea>
+            </div>
 
-        <div class="form__group">
-            <label for="taches">Tâches</label>
-            <textarea id="taches" [(ngModel)]="editTaches" class="form__input"></textarea>
-        </div>
+            <div class="form__group">
+                <label for="editDifficultes">Difficultés rencontrées</label>
+                <textarea id="editDifficultes" [(ngModel)]="editDifficultes" class="form__input"></textarea>
+            </div>
 
-        <div class="form__group">
-            <label for="difficultes">Difficultés rencontrées</label>
-            <textarea id="difficulté" [(ngModel)]="editDifficultes" class="form__input"></textarea>
-        </div>
-        <div class="form__group">
-            <label for="competences">Compétences acquises</label>
-            <textarea id="competences" [(ngModel)]="editCompetences" class="form__input"></textarea>
-        </div>
+            <div class="form__group">
+                <label for="editCompetences">Compétences acquises</label>
+                <textarea id="editCompetences" [(ngModel)]="editCompetences" class="form__input"></textarea>
+            </div>
 
-        <div class="form__group">
-            <label for="edit_date_entree">Date </label>
-            <input type="date" id="edit_date_entree" [(ngModel)]="editDate" [attr.min]="dateRange.min" [attr.max]="dateRange.max" class="form__input">
-        </div>
-
-        <div class="flex justify-center gap-2 mt-4">
-            <button class="flex-none rounded-md bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground"
-                (click)="saveEditJournal()">Enregistrer</button>
-            <button class="flex-none rounded-md bg-gray-900 px-4 py-2.5 text-xs font-semibold text-primary-foreground"
-                (click)="closeModalEditJournal()">Annuler</button>
-        </div>
-
-
+            <div class="form__actions">
+                <button class="btn-secondary" (click)="closeModalEditJournal()">Annuler</button>
+                <button class="btn-primary" (click)="saveEditJournal()">Enregistrer</button>
+            </div>
         </ng-container>
     </app-modal>
 
-    <app-modal [isOpen]="modalViewOpen" [title]="'Détail journal'" [size]="'lg'" (close)="closeView()">
+    <app-modal [isOpen]="modalViewOpen" [title]="selectedJournal?.titre || 'Entrée du journal'" [size]="'lg'" (close)="closeView()">
 
-        <div *ngIf="selectedJournal" class="space-y-4">
+        <!-- whitespace-pre-line : garde les retours à la ligne saisis ; break-words : pas de débordement -->
+        <div *ngIf="selectedJournal" class="space-y-4 break-words text-sm">
 
-            <div>
-                <p class="text-sm text-muted-foreground">Date</p>
-                <p>{{ selectedJournal.date_entree | date }}</p>
+            <p class="badge-primary">{{ selectedJournal.date_entree | date }}</p>
+
+            <div *ngIf="selectedJournal.description">
+                <p class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Description</p>
+                <p class="mt-1 whitespace-pre-line text-foreground">{{ selectedJournal.description }}</p>
             </div>
 
             <div>
-                <p class="text-sm text-muted-foreground">Titre</p>
-                <p class="font-semibold text-foreground">
-                    {{ selectedJournal.titre }}
-                </p>
+                <p class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Tâches réalisées</p>
+                <p class="mt-1 whitespace-pre-line text-foreground">{{ selectedJournal.taches }}</p>
             </div>
 
             <div>
-                <p class="text-sm text-muted-foreground">Description</p>
-                <p>{{ selectedJournal.description }}</p>
+                <p class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Difficultés rencontrées</p>
+                <p class="mt-1 whitespace-pre-line text-foreground">{{ selectedJournal.difficultes }}</p>
             </div>
 
             <div>
-                <p class="text-sm text-muted-foreground">Tâches</p>
-                <p>{{ selectedJournal.taches }}</p>
+                <p class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Compétences acquises</p>
+                <p class="mt-1 whitespace-pre-line text-foreground">{{ selectedJournal.competences }}</p>
             </div>
 
-            <div>
-                <p class="text-sm text-muted-foreground">Difficultés rencontrées</p>
-                <p>{{ selectedJournal.difficultes }}</p>
-            </div>
-
-
-            <div>
-                <p class="text-sm text-muted-foreground">Compétences acquises</p>
-                <p>{{ selectedJournal.competences }}</p>
-            </div>
-
-            <hr>
-
-            <div class="flex justify-center gap-2 mt-4">
-                <button class="flex-none rounded-md bg-cyan-600 px-4 py-2.5 text-xs font-semibold text-white"
-                    (click)="editJournal()">Modifier</button>
-                <button class="flex-none rounded-md bg-red-600 px-4 py-2.5 text-xs font-semibold text-white"
-                    (click)="deleteJournal()">Supprimer</button>
-                <button
-                    class="flex-none rounded-md bg-gray-900 px-4 py-2.5 text-xs font-semibold text-primary-foreground"
-                    (click)="closeView()">Annuler</button>
+            <div class="form__actions">
+                <button class="btn-danger sm:mr-auto" (click)="askDeleteJournal()">
+                    <app-icon name="trash" class="h-4 w-4" />
+                    Supprimer
+                </button>
+                <button class="btn-secondary" (click)="closeView()">Fermer</button>
+                <button class="btn-primary" (click)="editJournal()">
+                    <app-icon name="pencil" class="h-4 w-4" />
+                    Modifier
+                </button>
             </div>
 
         </div>
-
     </app-modal>
+
+    <!-- Confirmation de suppression -->
+    <app-modal [isOpen]="modalDeleteOpen" [title]="'Supprimer l\'entrée'" [size]="'md'" (close)="closeModalDeleteJournal()">
+        <div class="flex gap-3">
+            <div class="shrink-0 rounded-full bg-destructive/10 p-2 text-destructive">
+                <app-icon name="exclamation-triangle" class="h-5 w-5" />
+            </div>
+            <div class="min-w-0 text-sm">
+                <p class="text-foreground">
+                    Voulez-vous vraiment supprimer l'entrée
+                    <span class="break-words font-semibold">« {{ journalToDelete?.titre }} »</span> ?
+                </p>
+                <p class="mt-1 text-muted-foreground">Cette action est définitive.</p>
+            </div>
+        </div>
+        <div class="form__actions mt-4">
+            <button class="btn-secondary" (click)="closeModalDeleteJournal()">Annuler</button>
+            <button class="btn-danger" (click)="deleteJournal()">Supprimer</button>
+        </div>
+    </app-modal>
+</div>

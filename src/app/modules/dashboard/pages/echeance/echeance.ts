@@ -6,8 +6,11 @@ import { EcheanceModel, EcheanceService } from '../../services/echeance/echeance
 import { NotificationService } from '../../../../shared/components/notification/notification.service';
 import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
 import { DateRange, clampDate, echeanceRange, todayIso } from '../../../../shared/utils/date';
 import { ProfileModel, ProfileService } from '../../services/profile/profile.service';
+
+type Statut = EcheanceModel['statut'];
 
 const FIELD_LABELS: Record<string, string> = {
   title: 'Titre',
@@ -19,7 +22,7 @@ const FIELD_LABELS: Record<string, string> = {
 @Component({
   standalone: true,
   selector: 'app-echeance',
-  imports: [CommonModule, ModalComponent, FormsModule, NotificationComponent],
+  imports: [CommonModule, ModalComponent, FormsModule, NotificationComponent, IconComponent],
   templateUrl: './echeance.html',
   styleUrl: './echeance.scss',
 })
@@ -51,10 +54,7 @@ export class Echeance implements OnInit {
   echeances: EcheanceModel[] = [];
 
   filteredEcheances: EcheanceModel[] = [];
-  activeTab: 'Toutes' | 'A venir' | 'Fait' | 'En retard' = 'Toutes';
-
-  // selected item
-  selected: any = null;
+  activeTab: Statut | 'Toutes' = 'Toutes';
 
 
   ngOnInit(): void {
@@ -68,7 +68,6 @@ export class Echeance implements OnInit {
   }
 
   loadEcheances(): void {
-    const token = localStorage.getItem('authToken');
     this.echeanceService.getEcheances().subscribe({
       next: (data) => {
         this.echeances = data;
@@ -79,7 +78,7 @@ export class Echeance implements OnInit {
     });
   }
 
-  setTab(tab: 'Toutes' | 'A venir' | 'Fait' | 'En retard'): void {
+  setTab(tab: Statut | 'Toutes'): void {
     this.activeTab = tab;
     this.applyTabFilter();
   }
@@ -92,15 +91,6 @@ export class Echeance implements OnInit {
     }
   }
 
-  get countAvenir(): number {
-    return this.echeances.filter(e => e.statut === 'A venir').length;
-  }
-  get countFait(): number {
-    return this.echeances.filter(e => e.statut === 'Fait').length;
-  }
-  get countEnRetard(): number {
-    return this.echeances.filter(e => e.statut === 'En retard').length;
-  }
 
   createEcheance(): void {
     const echeanceload = {
@@ -111,7 +101,7 @@ export class Echeance implements OnInit {
     };
     this.echeanceService.createEcheance(echeanceload).subscribe({
       next: (data) => {
-        this.notificationService.success('Échéance créée', 'La nouvelle échéance a été créée avec succès!');
+        this.notificationService.success('Échéance créée', 'La nouvelle échéance a été créée avec succès.');
         this.loadEcheances();
         this.modalCreateOpen = false;
       },
@@ -178,7 +168,7 @@ export class Echeance implements OnInit {
     };
     this.echeanceService.updateEcheance(this.echeanceToEdit!.id, payload).subscribe({
       next: () => {
-        this.notificationService.success('Échéance modifiée', 'L\'échéance a été modifiée avec succès!');
+        this.notificationService.success('Échéance modifiée', 'L\'échéance a été modifiée avec succès.');
         this.loadEcheances();
         this.closeModalEditEcheance();
       },
@@ -209,7 +199,7 @@ export class Echeance implements OnInit {
   deleteEcheance(): void {
     this.echeanceService.deleteEcheance(this.echeanceToDelete!.id).subscribe({
       next: () => {
-        this.notificationService.success('Echéance supprimée', "L'échéance a été supprimée avec succès!");
+        this.notificationService.success('Échéance supprimée', "L'échéance a été supprimée avec succès.");
         this.loadEcheances();
         this.closeModalDeleteEcheance();
       },
@@ -220,34 +210,18 @@ export class Echeance implements OnInit {
     });
   }
 
-  closeDelete() {
-    this.modalDeleteOpen = false;
-  }
 
 
   menuOpen = false;
-  selectedEcheance: any = null;
-  menuPosition = { x: 0, y: 0 };
+  selectedEcheance: EcheanceModel | null = null;
 
-
-
-
-  openDeleteEcheance(e: any) {
-    this.selectedEcheance = e;
-
-    this.modalDeleteOpen = true;
-  }
-  openMenu(event: MouseEvent, e: any) {
+  // Menu rattaché à la ligne (sous le bouton ⋮, aligné à droite) : il suit le défilement
+  // et ne sort plus de l'écran comme lorsqu'il était ouvert au point du clic
+  openMenu(event: MouseEvent, e: EcheanceModel) {
     event.stopPropagation();
-
+    const alreadyOpen = this.menuOpen && this.selectedEcheance?.id === e.id;
     this.selectedEcheance = e;
-
-    this.menuOpen = true;
-
-    this.menuPosition = {
-      x: event.clientX,
-      y: event.clientY
-    };
+    this.menuOpen = !alreadyOpen;
   }
 
   closeMenu() {
@@ -256,16 +230,42 @@ export class Echeance implements OnInit {
 
   onEditFromMenu() {
     this.closeMenu();
-    this.openEdit(this.selectedEcheance);
+    if (this.selectedEcheance) this.openEdit(this.selectedEcheance);
   }
 
   onDeleteFromMenu() {
     this.closeMenu();
-    this.openDelete(this.selectedEcheance);
+    if (this.selectedEcheance) this.openDelete(this.selectedEcheance);
   }
 
   @HostListener('document:click')
   onDocumentClick() {
     this.closeMenu();
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    this.closeMenu();
+  }
+
+  // ===== Affichage =====
+  readonly tabs: { value: Statut | 'Toutes'; label: string }[] = [
+    { value: 'Toutes', label: 'Toutes' },
+    { value: 'A venir', label: 'À venir' },
+    { value: 'Fait', label: 'Terminées' },
+    { value: 'En retard', label: 'En retard' },
+  ];
+
+  // Libellé affiché (la valeur stockée par l'API reste 'A venir' / 'Fait' / 'En retard')
+  statutLabel(statut: Statut): string {
+    return { 'A venir': 'À venir', 'Fait': 'Terminée', 'En retard': 'En retard' }[statut] ?? statut;
+  }
+
+  statutBadge(statut: Statut): string {
+    return { 'A venir': 'badge-info', 'Fait': 'badge-success', 'En retard': 'badge-danger' }[statut] ?? 'badge-neutral';
+  }
+
+  tabCount(tab: Statut | 'Toutes'): number {
+    return tab === 'Toutes' ? this.echeances.length : this.echeances.filter(e => e.statut === tab).length;
   }
 }
