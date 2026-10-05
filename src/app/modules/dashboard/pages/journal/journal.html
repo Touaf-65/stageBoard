@@ -120,6 +120,8 @@
 
     <app-modal [isOpen]="modalCreateOpen" [title]="'Nouvelle entrée journal'" [size]="'lg'"
         (close)="closeModalCreateJournal()">
+        <!-- Recréé à chaque ouverture : les champs repartent des valeurs du composant -->
+        <ng-container *ngIf="modalCreateOpen">
 
         <div class="space-y-4">
 
@@ -163,10 +165,13 @@
 
         </div>
 
+        </ng-container>
     </app-modal>
 
     <app-modal [isOpen]="modalEditOpen" [title]="'Modifier une entrée journal'" [size]="'lg'"
         (close)="closeModalEditJournal()">
+        <!-- Recréé à chaque ouverture : les champs repartent des valeurs du composant -->
+        <ng-container *ngIf="modalEditOpen">
         <p class="text-lg text-justify text-red-700 dark:text-red-400">
             Êtes-vous sûr de vouloir <span class="font-semibold text-red-600 dark:text-red-300">modifier
                 l'échéance</span>
@@ -212,6 +217,7 @@
         </div>
 
 
+        </ng-container>
     </app-modal>
 
     <app-modal [isOpen]="modalViewOpen" [title]="'Détail journal'" [size]="'lg'" (close)="closeView()">

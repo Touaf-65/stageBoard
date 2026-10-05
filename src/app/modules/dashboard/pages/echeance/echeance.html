@@ -121,6 +121,8 @@
 
 <!-- Modal d'ajout échéance-->
 <app-modal [isOpen]="modalCreateOpen" [title]="'Créer une échéance'" [size]="'lg'" (close)="closeModalCreateEcheance()">
+    <!-- Recréé à chaque ouverture : les champs repartent des valeurs du composant -->
+    <ng-container *ngIf="modalCreateOpen">
     <div class="form__group">
         <label for="titre">Titre</label>
         <input type="text" id="titre" [(ngModel)]="titre" class="form__input">
@@ -151,10 +153,13 @@
             (click)="closeModalCreateEcheance()">Annuler</button>
     </div>
 
+    </ng-container>
 </app-modal>
 
 <!--Modal d'édition échéance-->
 <app-modal [isOpen]="modalEditOpen" [title]="'Modifier échéance'" [size]="'lg'" (close)="closeModalEditEcheance()">
+    <!-- Recréé à chaque ouverture : les champs repartent des valeurs du composant -->
+    <ng-container *ngIf="modalEditOpen">
     <p class="text-lg text-justify text-red-700 dark:text-red-400">
         Êtes-vous sûr de vouloir <span class="font-semibold text-red-600 dark:text-red-300">modifier l'échéance</span>
         &nbsp;
@@ -191,6 +196,7 @@
             (click)="closeModalEditEcheance()">Annuler</button>
     </div>
 
+    </ng-container>
 </app-modal>
 
 
