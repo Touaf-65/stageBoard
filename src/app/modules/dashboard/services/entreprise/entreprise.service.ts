@@ -1,19 +1,19 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../../../core/constants/api.config';
-import { Entreprise } from '../../pages/entreprise/entreprise';
 
 export interface EntrepriseModel {
   id: number;
   nom: string;
-  secteur: string;
-  adresse: string;
-  telephone: string;
-  email_tuteur: string;
-  nom_tuteur: string;
+  secteur: string | null;
+  adresse: string | null;
+  telephone: string | null;
+  email_tuteur: string | null;
+  nom_tuteur: string | null;
 }
+
+export type EntrepriseRequest = Omit<EntrepriseModel, 'id'>;
 
 @Injectable({
   providedIn: 'root'
@@ -33,9 +33,24 @@ export class EntrepriseService {
   }
 
   getEntreprise(): Observable<EntrepriseModel> {
-
     return this.http.get<EntrepriseModel>(
       this.apiUrl,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  createEntreprise(data: EntrepriseRequest): Observable<{ msg: string; id: number }> {
+    return this.http.post<{ msg: string; id: number }>(
+      this.apiUrl,
+      data,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  updateEntreprise(id: number, data: EntrepriseRequest): Observable<{ msg: string }> {
+    return this.http.put<{ msg: string }>(
+      `${this.apiUrl}${id}`,
+      data,
       { headers: this.getAuthHeaders() }
     );
   }

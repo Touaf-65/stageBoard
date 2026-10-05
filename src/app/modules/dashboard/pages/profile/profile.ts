@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProfileService, ProfileModel } from '../../services/profile/profile.service'
 import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
 import { NotificationService } from '../../../../shared/components/notification/notification.service';
@@ -9,7 +9,7 @@ import { NotificationService } from '../../../../shared/components/notification/
 @Component({
   standalone: true,
   selector: 'app-profile',
-  imports: [CommonModule, FormsModule, NotificationComponent],
+  imports: [CommonModule, FormsModule, NotificationComponent, RouterLink],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
 })
