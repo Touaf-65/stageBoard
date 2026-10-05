@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
 import { ClickOutsideDirective } from '../../../../../shared/directives/click-outside.directive';
 import { SvgIconComponent } from 'angular-svg-icon';
 import { Action } from 'rxjs/internal/scheduler/Action';
-import { UserService } from '../../../../authentication/user/user.service';
+import { UserService } from '../../../../authentication/services/user/user.service';
 import { NotificationService } from '../../../../../shared/components/notification/notification.service';
 import { timer } from 'rxjs';
 

@@ -4,7 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SvgIconComponent } from 'angular-svg-icon';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../services/user/user.service';
 import { NotificationService } from '../../../../shared/components/notification/notification.service';
 import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
 import { timer } from 'rxjs';

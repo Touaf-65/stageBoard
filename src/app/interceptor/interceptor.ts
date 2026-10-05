@@ -9,7 +9,7 @@ import {
 } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
-import { UserService } from '../modules/authentication/user/user.service';
+import { UserService } from '../modules/authentication/services/user/user.service';
 import { API_CONFIG } from '../core/constants/api.config';
 
 @Injectable()
