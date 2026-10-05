@@ -6,7 +6,8 @@ import { EcheanceModel, EcheanceService } from '../../services/echeance/echeance
 import { NotificationService } from '../../../../shared/components/notification/notification.service';
 import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
-import { todayIso } from '../../../../shared/utils/date';
+import { DateRange, clampDate, echeanceRange, todayIso } from '../../../../shared/utils/date';
+import { ProfileModel, ProfileService } from '../../services/profile/profile.service';
 
 const FIELD_LABELS: Record<string, string> = {
   title: 'Titre',
@@ -27,8 +28,20 @@ export class Echeance implements OnInit {
   constructor(
     private notificationService: NotificationService,
     private echeanceService: EcheanceService,
+    private profileService: ProfileService,
     private cdr: ChangeDetectorRef
   ) { }
+
+  // Dates du stage, pour borner les champs de date comme le fait l'API
+  profile: ProfileModel | null = null;
+
+  get createRange(): DateRange {
+    return echeanceRange(this.profile?.date_debut, this.profile?.date_fin);
+  }
+
+  get editRange(): DateRange {
+    return echeanceRange(this.profile?.date_debut, this.profile?.date_fin, this.echeanceToEdit?.date_limite);
+  }
 
   titre: string = '';
   description: string = '';
@@ -46,6 +59,12 @@ export class Echeance implements OnInit {
 
   ngOnInit(): void {
     this.loadEcheances();
+    this.profileService.getProfile().subscribe({
+      next: (profile) => {
+        this.profile = profile;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   loadEcheances(): void {
@@ -93,10 +112,6 @@ export class Echeance implements OnInit {
     this.echeanceService.createEcheance(echeanceload).subscribe({
       next: (data) => {
         this.notificationService.success('Échéance créée', 'La nouvelle échéance a été créée avec succès!');
-        this.titre = '';
-        this.description = '';
-        this.date_limite = todayIso();
-        this.statut = 'A venir';
         this.loadEcheances();
         this.modalCreateOpen = false;
       },
@@ -111,7 +126,12 @@ export class Echeance implements OnInit {
 
   // ===== CREATE =====
   modalCreateOpen = false;
+  // Formulaire vierge à chaque ouverture : la date part d'aujourd'hui, ramenée dans les bornes du stage
   openModalCreateEcheance() {
+    this.titre = '';
+    this.description = '';
+    this.date_limite = clampDate(todayIso(), this.createRange);
+    this.statut = 'A venir';
     this.modalCreateOpen = true;
   }
 

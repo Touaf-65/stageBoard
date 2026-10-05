@@ -7,7 +7,8 @@ import { EcheanceModel } from '../../services/echeance/echeance.service';
 import { JournalModel, JournalService } from '../../services/journal/journal.service';
 import { FormsModule } from '@angular/forms';
 import { apiErrorMessage } from '../../../../shared/utils/api-error';
-import { todayIso } from '../../../../shared/utils/date';
+import { DateRange, clampDate, journalRange, todayIso } from '../../../../shared/utils/date';
+import { ProfileModel, ProfileService } from '../../services/profile/profile.service';
 
 const FIELD_LABELS: Record<string, string> = {
   titre: 'Titre',
@@ -30,8 +31,17 @@ export class Journal implements OnInit {
   constructor(
     private notificationService: NotificationService,
     private journalService: JournalService,
+    private profileService: ProfileService,
     private cdr: ChangeDetectorRef
   ) { }
+
+  // Dates du stage, pour borner les champs de date comme le fait l'API
+  profile: ProfileModel | null = null;
+
+  get dateRange(): DateRange {
+    return journalRange(this.profile?.date_debut, this.profile?.date_fin);
+  }
+
   titre: string = '';
   description: string = '';
   date_entree: string = todayIso();
@@ -49,6 +59,12 @@ export class Journal implements OnInit {
 
   ngOnInit() {
     this.loadJournals();
+    this.profileService.getProfile().subscribe({
+      next: (profile) => {
+        this.profile = profile;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   loadJournals(): void {
@@ -112,12 +128,6 @@ export class Journal implements OnInit {
     this.journalService.createJournal(journalload).subscribe({
       next: (data) => {
         this.notificationService.success('Journal créé', 'Le nouveau journal a été créé avec succès!');
-        this.titre = '';
-        this.description = '';
-        this.date_entree = todayIso();
-        this.competences = '';
-        this.difficultes = '';
-        this.taches = '';
         this.loadJournals();
         this.modalCreateOpen = false;
       },
@@ -135,7 +145,14 @@ export class Journal implements OnInit {
   // ==== CREATE ====
   modalCreateOpen = false;
 
+  // Formulaire vierge à chaque ouverture : la date part d'aujourd'hui, ramenée dans les bornes du stage
   openModalCreateJournal() {
+    this.titre = '';
+    this.description = '';
+    this.date_entree = clampDate(todayIso(), this.dateRange);
+    this.competences = '';
+    this.difficultes = '';
+    this.taches = '';
     this.modalCreateOpen = true;
   }
 

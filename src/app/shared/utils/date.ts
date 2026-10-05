@@ -7,3 +7,37 @@ export function todayIso(): string {
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
+
+/** Bornes AAAA-MM-JJ d'un <input type="date"> ; null = pas de borne. */
+export interface DateRange {
+  min: string | null;
+  max: string | null;
+}
+
+// Les dates AAAA-MM-JJ se comparent directement en tant que chaînes
+const latest = (...dates: (string | null | undefined)[]) =>
+  dates.filter((d): d is string => !!d).sort().pop() ?? null;
+const earliest = (...dates: (string | null | undefined)[]) =>
+  dates.filter((d): d is string => !!d).sort().shift() ?? null;
+
+/**
+ * Dates acceptées par l'API pour une échéance : à partir d'aujourd'hui et
+ * pendant le stage. `unchanged` (date actuelle d'une échéance modifiée) reste
+ * sélectionnable même si elle est passée, comme le permet l'API.
+ */
+export function echeanceRange(dateDebut?: string | null, dateFin?: string | null, unchanged?: string | null): DateRange {
+  const min = latest(todayIso(), dateDebut);
+  return { min: earliest(min, unchanged), max: dateFin ?? null };
+}
+
+/** Dates acceptées par l'API pour le journal : pendant le stage, jusqu'à aujourd'hui. */
+export function journalRange(dateDebut?: string | null, dateFin?: string | null): DateRange {
+  return { min: dateDebut ?? null, max: earliest(todayIso(), dateFin) };
+}
+
+/** Ramène une date dans les bornes (sert de valeur par défaut d'un formulaire). */
+export function clampDate(value: string, range: DateRange): string {
+  if (range.min && value < range.min) return range.min;
+  if (range.max && value > range.max) return range.max;
+  return value;
+}

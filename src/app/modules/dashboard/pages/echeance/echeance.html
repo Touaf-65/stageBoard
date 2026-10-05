@@ -132,7 +132,7 @@
     <div class="flex flex-col md:flex-row gap-4 justify-between mb-4">
         <div class="form__group">
             <label for="dueDate">Date limite</label>
-            <input type="date" id="dueDate" [(ngModel)]="date_limite" class="form__input">
+            <input type="date" id="dueDate" [(ngModel)]="date_limite" [attr.min]="createRange.min" [attr.max]="createRange.max" class="form__input">
         </div>
         <div class="form__group">
             <label for="statut">Statut</label>
@@ -171,8 +171,8 @@
     </div>
     <div class="flex flex-col md:flex-row gap-4 justify-between mb-4">
         <div class="form__group">
-            <label for="dueDate">Date limite</label>
-            <input type="date" id="dueDate" [(ngModel)]="editDate" class="form__input">
+            <label for="editDueDate">Date limite</label>
+            <input type="date" id="editDueDate" [(ngModel)]="editDate" [attr.min]="editRange.min" [attr.max]="editRange.max" class="form__input">
         </div>
         <div class="form__group">
             <label for="statut">Statut</label>

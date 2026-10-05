@@ -149,7 +149,7 @@
 
             <div class="form__group">
                 <label for="date_entree">Date </label>
-                <input type="date" id="date_entree" [(ngModel)]="date_entree" class="form__input">
+                <input type="date" id="date_entree" [(ngModel)]="date_entree" [attr.min]="dateRange.min" [attr.max]="dateRange.max" class="form__input">
             </div>
 
             <div class="flex justify-center gap-2 mt-4">
@@ -200,8 +200,8 @@
         </div>
 
         <div class="form__group">
-            <label for="date_entree">Date </label>
-            <input type="date" id="date_entree" [(ngModel)]="editDate" class="form__input">
+            <label for="edit_date_entree">Date </label>
+            <input type="date" id="edit_date_entree" [(ngModel)]="editDate" [attr.min]="dateRange.min" [attr.max]="dateRange.max" class="form__input">
         </div>
 
         <div class="flex justify-center gap-2 mt-4">
