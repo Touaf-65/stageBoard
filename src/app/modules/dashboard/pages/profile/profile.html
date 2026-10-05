@@ -69,9 +69,9 @@
           <div>
             <p class="text-xs text-muted-foreground">Période</p>
             <p class="text-sm font-medium text-foreground">
-              {{ (profile?.date_debut | date:'dd/MM/yyyy') || '—' }}
+              {{ (profile?.date_debut | date) || '—' }}
               →
-              {{ (profile?.date_fin | date:'dd/MM/yyyy') || '—' }}
+              {{ (profile?.date_fin | date) || '—' }}
             </p>
           </div>
         </div>
@@ -115,12 +115,12 @@
 
           <div>
             <p class="text-xs text-muted-foreground">Date de début</p>
-            <p class="text-sm font-medium text-foreground">{{ (profile?.date_debut | date:'dd MMM yyyy') || '—' }}</p>
+            <p class="text-sm font-medium text-foreground">{{ (profile?.date_debut | date) || '—' }}</p>
           </div>
 
           <div>
             <p class="text-xs text-muted-foreground">Date de fin</p>
-            <p class="text-sm font-medium text-foreground">{{ (profile?.date_fin | date:'dd MMM yyyy') || '—' }}</p>
+            <p class="text-sm font-medium text-foreground">{{ (profile?.date_fin | date) || '—' }}</p>
           </div>
 
         </div>

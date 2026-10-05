@@ -85,7 +85,7 @@
                             {{ journal.date_entree | date:'dd' }}
                         </p>
                         <p class="text-xs text-muted-foreground uppercase">
-                            {{ journal.date_entree | date:'MMM' }}
+                            {{ journal.date_entree | date:'MM/yy' }}
                         </p>
                     </div>
 
@@ -105,7 +105,7 @@
                 <div class="flex items-center gap-4">
 
                     <p class="text-sm text-muted-foreground">
-                        {{ journal.date_entree | date:'dd MMM yyyy'}}
+                        {{ journal.date_entree | date }}
                     </p>
 
                     <span class="text-muted-foreground">›</span>
@@ -226,7 +226,7 @@
 
             <div>
                 <p class="text-sm text-muted-foreground">Date</p>
-                <p>{{ selectedJournal.date_entree | date:'dd MMM yyyy' }}</p>
+                <p>{{ selectedJournal.date_entree | date }}</p>
             </div>
 
             <div>

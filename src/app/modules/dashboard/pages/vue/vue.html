@@ -51,7 +51,7 @@
                     <div>
                         <p class="text-sm text-muted-foreground">Prochaine échéance</p>
                         <p class="text-2xl font-bold text-foreground">
-                            {{ prochaineEcheance ? (prochaineEcheance.date_limite | date:'dd MMM') : '—' }}
+                            {{ prochaineEcheance ? (prochaineEcheance.date_limite | date) : '—' }}
                         </p>
                         <p class="text-xs text-yellow-600 mt-1">
                             {{ prochaineEcheance ? 'Dans ' + joursAvantEcheance + ' jours' : 'Aucune échéance' }}
@@ -120,7 +120,7 @@
                         <div>
                             <h3 class="text-lg font-semibold text-foreground">{{ prochaineEcheance.titre }}</h3>
                             <p class="text-sm text-muted-foreground mt-1">
-                                {{ prochaineEcheance.date_limite | date:'dd MMM yyyy' }}
+                                {{ prochaineEcheance.date_limite | date }}
                             </p>
                         </div>
                         <span class="text-xs font-medium px-3 py-1 rounded-full" [ngClass]="badgeEcheanceClass">
@@ -148,7 +148,7 @@
                 <ng-container *ngIf="dernierJournal; else noJournal">
                     <h3 class="text-lg font-semibold text-foreground">{{ dernierJournal.titre }}</h3>
                     <p class="text-sm text-muted-foreground mt-1 mb-3">
-                        {{ dernierJournal.date_entree | date:'dd MMM yyyy' }}
+                        {{ dernierJournal.date_entree | date }}
                     </p>
                     <p class="text-sm text-muted-foreground mb-4 line-clamp-2">{{ dernierJournal.description }}</p>
                 </ng-container>
@@ -183,8 +183,8 @@
                 </div>
             </div>
             <div class="flex justify-between text-xs text-muted-foreground mt-2">
-                <span>{{ profile?.date_debut | date:'dd MMM yyyy' }}</span>
-                <span>{{ profile?.date_fin | date:'dd MMM yyyy' }}</span>
+                <span>{{ profile?.date_debut | date }}</span>
+                <span>{{ profile?.date_fin | date }}</span>
             </div>
         </div>
 
