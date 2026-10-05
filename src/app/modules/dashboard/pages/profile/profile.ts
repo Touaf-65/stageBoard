@@ -9,6 +9,7 @@ import { NotificationService } from '../../../../shared/components/notification/
 import { UserService } from '../../../authentication/services/user/user.service';
 import { apiErrorMessage, isAuthError } from '../../../../shared/utils/api-error';
 import { IconComponent } from '../../../../shared/components/icon/icon.component';
+import { stageProgress } from '../../../../shared/utils/date';
 
 const FIELD_LABELS: Record<string, string> = {
   nom: 'Nom',
@@ -61,6 +62,10 @@ export class Profile implements OnInit {
 
   get isProfileComplete(): boolean {
     return this.profileService.isProfileComplete(this.profile);
+  }
+
+  get avancement(): { pourcentage: number; joursRestants: number } {
+    return stageProgress(this.profile?.date_debut, this.profile?.date_fin);
   }
 
   get initiales(): string {

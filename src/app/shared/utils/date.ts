@@ -41,3 +41,20 @@ export function clampDate(value: string, range: DateRange): string {
   if (range.max && value > range.max) return range.max;
   return value;
 }
+
+/**
+ * Avancement du stage à partir de ses dates (AAAA-MM-JJ) :
+ * pourcentage écoulé (0-100) et jours restants jusqu'à la fin (0 minimum).
+ */
+export function stageProgress(dateDebut?: string | null, dateFin?: string | null): { pourcentage: number; joursRestants: number } {
+  if (!dateDebut || !dateFin) return { pourcentage: 0, joursRestants: 0 };
+  const debut = new Date(dateDebut + 'T00:00:00').getTime();
+  const fin = new Date(dateFin + 'T00:00:00').getTime();
+  const now = Date.now();
+  const total = fin - debut;
+  const pourcentage = total > 0 ? Math.round(((now - debut) / total) * 100) : 0;
+  return {
+    pourcentage: Math.min(100, Math.max(0, pourcentage)),
+    joursRestants: Math.max(0, Math.ceil((fin - now) / 86_400_000)),
+  };
+}

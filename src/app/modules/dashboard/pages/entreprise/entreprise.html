@@ -84,71 +84,79 @@
   <!-- Contenu -->
   <div *ngIf="!loading && !isEditing && entreprise" class="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
-    <!-- INFOS ENTREPRISE -->
+    <!-- INFOS ENTREPRISE : même hauteur que la carte du tuteur (h-full) -->
     <div class="lg:col-span-3">
-      <div class="card p-6">
-        <h2 class="text-base font-semibold text-foreground mb-6">Informations entreprise</h2>
-        <div class="space-y-4">
+      <div class="card flex h-full flex-col p-6">
+        <h2 class="mb-5 text-base font-semibold text-foreground">Informations entreprise</h2>
 
-          <div>
-            <p class="text-sm text-muted-foreground">Nom de l'entreprise</p>
-            <p class="break-words text-sm font-medium text-foreground">{{ entreprise.nom }}</p>
+        <div class="flex items-start gap-4">
+          <div class="shrink-0 rounded-xl bg-primary/10 p-3 text-primary">
+            <app-icon name="building-office" class="h-7 w-7" />
           </div>
-
-          <div>
-            <p class="text-sm text-muted-foreground">Secteur d'activité</p>
-            <p class="text-sm font-medium text-foreground">{{ entreprise.secteur || '—' }}</p>
+          <div class="min-w-0">
+            <p class="break-words text-lg font-semibold text-foreground">{{ entreprise.nom }}</p>
+            <p class="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+              <app-icon name="briefcase" class="h-4 w-4" />
+              {{ entreprise.secteur || "Secteur d'activité non renseigné" }}
+            </p>
           </div>
-
-          <hr>
-
-          <div>
-            <p class="text-sm text-muted-foreground">Adresse</p>
-            <p class="break-words text-sm font-medium text-foreground">{{ entreprise.adresse || '—' }}</p>
-          </div>
-
-          <hr>
-
-          <div>
-            <p class="text-sm text-muted-foreground">Téléphone</p>
-            <p class="text-sm font-medium text-foreground">{{ entreprise.telephone || '—' }}</p>
-          </div>
-
         </div>
+
+        <!-- Coordonnées : grille sur deux colonnes, calée en bas de la carte -->
+        <dl class="mt-6 grid grid-cols-1 gap-4 border-t border-border pt-5 sm:grid-cols-2 lg:mt-auto">
+          <div class="flex items-start gap-3">
+            <app-icon name="map-pin" class="mt-0.5 h-5 w-5 text-muted-foreground" />
+            <div class="min-w-0">
+              <dt class="text-xs text-muted-foreground">Adresse</dt>
+              <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ entreprise.adresse || '—' }}</dd>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <app-icon name="phone" class="mt-0.5 h-5 w-5 text-muted-foreground" />
+            <div class="min-w-0">
+              <dt class="text-xs text-muted-foreground">Téléphone</dt>
+              <dd class="mt-0.5 text-sm font-medium">
+                <a *ngIf="entreprise.telephone; else noTel" [href]="'tel:' + entreprise.telephone"
+                  class="text-primary hover:underline">{{ entreprise.telephone }}</a>
+                <ng-template #noTel><span class="text-foreground">—</span></ng-template>
+              </dd>
+            </div>
+          </div>
+        </dl>
       </div>
     </div>
 
     <!-- TUTEUR -->
-    <div class="lg:col-span-2 space-y-6">
+    <div class="lg:col-span-2">
+      <div class="card flex h-full flex-col p-6">
+        <h2 class="mb-5 text-base font-semibold text-foreground">Tuteur professionnel</h2>
 
-      <!-- TUTEUR -->
-      <div class="card p-6">
-        <h2 class="text-base font-semibold mb-6">Tuteur professionnel</h2>
-
-        <div class="flex items-center gap-4 mb-6">
+        <div class="flex items-center gap-4">
           <!-- Avatar avec initiales -->
-          <div class="w-14 h-14 shrink-0 rounded-full bg-primary/10 text-primary flex items-center justify-center text-lg font-bold">
+          <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary">
             {{ initiales }}
           </div>
           <div class="min-w-0">
             <p class="break-words font-semibold text-foreground">{{ entreprise.nom_tuteur || 'Tuteur non renseigné' }}</p>
+            <p class="break-all text-sm text-muted-foreground">{{ entreprise.email_tuteur || 'Email non renseigné' }}</p>
           </div>
         </div>
 
-        <div class="space-y-4">
-          <div class="flex items-start gap-3">
-            <app-icon name="envelope" class="mt-0.5 h-5 w-5 text-muted-foreground" />
-            <div class="min-w-0">
-              <p class="text-sm text-muted-foreground">Email</p>
-              <a *ngIf="entreprise.email_tuteur; else noEmail"
-                [href]="'mailto:' + entreprise.email_tuteur"
-                class="break-all text-sm text-primary hover:underline">{{ entreprise.email_tuteur }}</a>
-              <ng-template #noEmail><p class="text-sm text-foreground">—</p></ng-template>
-            </div>
-          </div>
+        <!-- Action calée en bas : la carte garde la même hauteur que sa voisine sans vide disgracieux -->
+        <div class="mt-6 border-t border-border pt-5 lg:mt-auto">
+          <a *ngIf="entreprise.email_tuteur; else noEmail" [href]="'mailto:' + entreprise.email_tuteur"
+            class="btn-secondary w-full">
+            <app-icon name="envelope" class="h-4 w-4" />
+            Envoyer un email
+          </a>
+          <ng-template #noEmail>
+            <button (click)="openEdit()" class="btn-link">
+              <app-icon name="plus" class="h-4 w-4" />
+              Ajouter l'email du tuteur
+            </button>
+          </ng-template>
         </div>
       </div>
-
     </div>
   </div>
 

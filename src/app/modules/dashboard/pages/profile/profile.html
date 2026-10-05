@@ -42,87 +42,97 @@
 
   <div *ngIf="!loading" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-    <!-- Avatar -->
+    <!-- Identité : même hauteur que la carte voisine (h-full), avancement calé en bas -->
     <div class="lg:col-span-1">
-      <div class="card space-y-4 p-6 text-center">
+      <div class="card flex h-full flex-col p-6">
 
-        <div class="w-20 h-20 rounded-full bg-primary/10 text-primary flex items-center justify-center text-2xl font-bold mx-auto">
-          {{ initiales }}
+        <div class="flex flex-col items-center gap-3 text-center">
+          <div class="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-2xl font-bold text-primary">
+            {{ initiales }}
+          </div>
+          <div class="w-full min-w-0">
+            <p class="break-words text-lg font-semibold text-foreground">{{ profile?.prenom }} {{ profile?.nom }}</p>
+            <p class="truncate text-sm text-muted-foreground" [title]="profile?.email">{{ profile?.email }}</p>
+          </div>
+          <span [ngClass]="isProfileComplete ? 'badge-success' : 'badge-warning'">
+            <app-icon [name]="isProfileComplete ? 'check-circle' : 'exclamation-triangle'" class="h-4 w-4" />
+            {{ isProfileComplete ? 'Profil complet' : 'Profil incomplet' }}
+          </span>
         </div>
 
-        <div class="min-w-0">
-          <p class="break-words text-lg font-semibold text-foreground">{{ profile?.prenom }} {{ profile?.nom }}</p>
-          <p class="truncate text-sm text-muted-foreground" [title]="profile?.email">{{ profile?.email }}</p>
-        </div>
-
-        <span [ngClass]="isProfileComplete ? 'badge-success' : 'badge-warning'">
-          <app-icon [name]="isProfileComplete ? 'check-circle' : 'exclamation-triangle'" class="h-4 w-4" />
-          {{ isProfileComplete ? 'Profil complet' : 'Profil incomplet' }}
-        </span>
-
-        <div class="text-left space-y-2 pt-2 border-t border-border">
-          <div>
-            <p class="text-xs text-muted-foreground">Type de stage</p>
-            <p class="text-sm font-medium text-foreground">{{ profile?.type_stage || '—' }}</p>
+        <!-- mt-auto : occupe l'espace restant quand la carte voisine est plus haute -->
+        <div class="mt-auto border-t border-border pt-5">
+          <div class="mt-1 flex items-center justify-between text-sm">
+            <span class="font-medium text-foreground">Avancement du stage</span>
+            <span class="font-semibold text-foreground">{{ avancement.pourcentage }}%</span>
           </div>
-          <div>
-            <p class="text-xs text-muted-foreground">Période</p>
-            <p class="text-sm font-medium text-foreground">
-              {{ (profile?.date_debut | date) || '—' }}
-              →
-              {{ (profile?.date_fin | date) || '—' }}
-            </p>
+          <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
+            <div class="h-2 rounded-full bg-primary transition-all duration-500" [style.width.%]="avancement.pourcentage"></div>
           </div>
+          <p class="mt-2 text-xs text-muted-foreground">
+            <ng-container *ngIf="profile?.date_debut && profile?.date_fin; else datesManquantes">
+              {{ avancement.joursRestants }} jour{{ avancement.joursRestants > 1 ? 's' : '' }} restant{{ avancement.joursRestants > 1 ? 's' : '' }}
+              · fin le {{ profile?.date_fin | date }}
+            </ng-container>
+            <ng-template #datesManquantes>Renseignez les dates de stage pour suivre l'avancement.</ng-template>
+          </p>
         </div>
 
       </div>
     </div>
 
-    <!-- Infos -->
+    <!-- Informations -->
     <div class="lg:col-span-2">
-      <div class="card space-y-5 p-6">
+      <div class="card flex h-full flex-col p-6">
 
-        <h2 class="text-base font-semibold text-foreground">Informations personnelles</h2>
+        <!-- MODE VIEW : deux sections pour structurer l'espace -->
+        <div *ngIf="!isEditing" class="space-y-6">
+          <section>
+            <h2 class="mb-4 text-base font-semibold text-foreground">Identité</h2>
+            <dl class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+              <div>
+                <dt class="text-xs text-muted-foreground">Prénom</dt>
+                <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ profile?.prenom || '—' }}</dd>
+              </div>
+              <div>
+                <dt class="text-xs text-muted-foreground">Nom</dt>
+                <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ profile?.nom || '—' }}</dd>
+              </div>
+              <div class="sm:col-span-2">
+                <dt class="text-xs text-muted-foreground">Email</dt>
+                <dd class="mt-0.5 break-all text-sm font-medium text-foreground">{{ profile?.email || '—' }}</dd>
+              </div>
+            </dl>
+          </section>
 
-        <!-- MODE VIEW -->
-        <div *ngIf="!isEditing" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-
-          <div>
-            <p class="text-xs text-muted-foreground">Prénom</p>
-            <p class="text-sm font-medium text-foreground">{{ profile?.prenom || '—' }}</p>
-          </div>
-
-          <div>
-            <p class="text-xs text-muted-foreground">Nom</p>
-            <p class="text-sm font-medium text-foreground">{{ profile?.nom || '—' }}</p>
-          </div>
-
-          <div class="sm:col-span-2">
-            <p class="text-xs text-muted-foreground">Email</p>
-            <p class="break-all text-sm font-medium text-foreground">{{ profile?.email || '—' }}</p>
-          </div>
-
-          <div>
-            <p class="text-xs text-muted-foreground">Filière</p>
-            <p class="text-sm font-medium text-foreground">{{ profile?.filiere || '—' }}</p>
-          </div>
-
-          <div>
-            <p class="text-xs text-muted-foreground">Année</p>
-            <p class="text-sm font-medium text-foreground">{{ profile?.annee || '—' }}</p>
-          </div>
-
-          <div>
-            <p class="text-xs text-muted-foreground">Date de début</p>
-            <p class="text-sm font-medium text-foreground">{{ (profile?.date_debut | date) || '—' }}</p>
-          </div>
-
-          <div>
-            <p class="text-xs text-muted-foreground">Date de fin</p>
-            <p class="text-sm font-medium text-foreground">{{ (profile?.date_fin | date) || '—' }}</p>
-          </div>
-
+          <section class="border-t border-border pt-6">
+            <h2 class="mb-4 text-base font-semibold text-foreground">Formation et stage</h2>
+            <dl class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
+              <div>
+                <dt class="text-xs text-muted-foreground">Filière</dt>
+                <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ profile?.filiere || '—' }}</dd>
+              </div>
+              <div>
+                <dt class="text-xs text-muted-foreground">Année</dt>
+                <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ profile?.annee || '—' }}</dd>
+              </div>
+              <div class="sm:col-span-2">
+                <dt class="text-xs text-muted-foreground">Type de stage</dt>
+                <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ profile?.type_stage || '—' }}</dd>
+              </div>
+              <div>
+                <dt class="text-xs text-muted-foreground">Date de début</dt>
+                <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ (profile?.date_debut | date) || '—' }}</dd>
+              </div>
+              <div>
+                <dt class="text-xs text-muted-foreground">Date de fin</dt>
+                <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ (profile?.date_fin | date) || '—' }}</dd>
+              </div>
+            </dl>
+          </section>
         </div>
+
+        <h2 *ngIf="isEditing" class="mb-5 text-base font-semibold text-foreground">Modifier mes informations</h2>
 
         <!-- MODE EDIT -->
         <div *ngIf="isEditing" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
