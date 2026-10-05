@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { API_CONFIG } from '../../../../core/constants/api.config';
 
@@ -22,18 +22,10 @@ export class ProfileService {
 
   constructor(private http: HttpClient) {}
 
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('authToken');
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    });
-  }
 
   getProfile(): Observable<ProfileModel> {
     return this.http.get<ProfileModel>(
-      `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PROFILE.BASE}`,
-      { headers: this.getAuthHeaders() }
+      `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PROFILE.BASE}`
     );
   }
 
@@ -41,8 +33,7 @@ export class ProfileService {
   updateProfile(data: Partial<ProfileModel>): Observable<ProfileModel> {
     return this.http.put<{ msg: string; profile: ProfileModel }>(
       `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.PROFILE.BASE}`,
-      data,
-      { headers: this.getAuthHeaders() }
+      data
     ).pipe(map(response => response.profile));
   }
 

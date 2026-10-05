@@ -1,9 +1,23 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { Observable, of, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { API_CONFIG } from '../../../../core/constants/api.config';
+
+export interface LoginResponse {
+  token: string;
+  email: string;
+  userId: number;
+}
+
+export interface ConnectedUser {
+  id: number;
+  email: string;
+  // Renseignés depuis le profil (absents de la réponse de /auth/login)
+  nom?: string;
+  prenom?: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -12,66 +26,59 @@ export class UserService {
   userChanged$ = new Subject<void>();
   private jwtService = new JwtHelperService();
 
-  constructor(private http:HttpClient, private router:Router) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
-  private getAuthHeaders(): HttpHeaders{
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      console.error('❌ Aucun token trouvé dans localStorage');
-      throw new Error('Token d\'authentification manquant');
-    }
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-
-    console.log('📤 Headers envoyés:', headers.keys());
-    return headers;
+  login(login: { email: string; password: string }) {
+    return this.http.post<LoginResponse>(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.AUTH.LOGIN}`, login);
   }
 
-  login(login:any){
-    return this.http.post(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.AUTH.LOGIN}`,login);
-  }
-
-  register(credentials: any) {
+  register(credentials: { email: string; password: string }) {
     return this.http.post(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.AUTH.REGISTER}`, credentials);
   }
 
-  setAccesToken(authenticationResponse:any):void{
-    // Handle both 'token' (from Flask) and 'access_token' formats
-    const token = authenticationResponse.token || authenticationResponse.access_token;
-    if (token) {
-      localStorage.setItem('authToken', token);
-    }
+  /** Enregistre la session à partir de la réponse de /auth/login. */
+  startSession(response: LoginResponse): void {
+    localStorage.setItem('authToken', response.token);
+    this.setConnectedUser({ id: response.userId, email: response.email });
   }
-  setConnectedUser(utilisateur: any): void {
+
+  setConnectedUser(utilisateur: ConnectedUser): void {
     localStorage.setItem('connectedUser', JSON.stringify(utilisateur));
     this.userChanged$.next();
   }
 
-  getConnectedUser(): any {
+  getConnectedUser(): Partial<ConnectedUser> {
     if (localStorage.getItem('connectedUser')) {
       return JSON.parse(localStorage.getItem('connectedUser') as string);
     }
     return {};
   }
 
-  isTokenValid(){
-    const token=localStorage.getItem("authToken");
-    return token ? !this.jwtService.isTokenExpired(token) : false;
-  }
-
-  getConnectedUserByEmail(email?:string):Observable<any>{
-    if(email!==undefined){
-      return this.http.get(`${API_CONFIG.BASE_URL}/auth/getConnectedUserByEmail/${email}/`);
+  isTokenValid(): boolean {
+    const token = localStorage.getItem("authToken");
+    try {
+      return token ? !this.jwtService.isTokenExpired(token) : false;
+    } catch {
+      return false; // token mal formé
     }
-    return of();
   }
 
-  
-  logout() {
+  /**
+   * Termine la session locale et revient à la connexion.
+   * notifyServer : invalide aussi le token côté API (POST /auth/logout). Inutile quand
+   * le token est déjà refusé (session expirée), d'où logout(false) dans l'intercepteur.
+   */
+  logout(notifyServer = true) {
+    const token = localStorage.getItem('authToken');
+    if (notifyServer && token && this.isTokenValid()) {
+      // En-tête passé explicitement : le token est retiré du localStorage juste après
+      this.http.post(
+        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.AUTH.LOGOUT}`,
+        {},
+        { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) }
+      ).subscribe({ error: () => {} });
+    }
+
     localStorage.removeItem('authToken');
     localStorage.removeItem('connectedUser');
     this.userChanged$.next();
@@ -79,11 +86,7 @@ export class UserService {
   }
 
   isLoggedIn(): boolean {
-    if(this.getConnectedUser().email!=null){
-      return true
-    }
-    return false;
+    return this.isTokenValid() && !!this.getConnectedUser().email;
   }
-  
- 
+
 }

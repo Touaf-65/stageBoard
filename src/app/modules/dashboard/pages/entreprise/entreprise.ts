@@ -6,7 +6,6 @@ import { EntrepriseService, EntrepriseModel, EntrepriseRequest } from '../../ser
 import { NotificationService } from '../../../../shared/components/notification/notification.service';
 import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
 import { apiErrorMessage, isAuthError } from '../../../../shared/utils/api-error';
-import { UserService } from '../../../authentication/services/user/user.service';
 
 const FIELD_LABELS: Record<string, string> = {
   nom: "Nom de l'entreprise",
@@ -49,7 +48,6 @@ export class Entreprise implements OnInit {
   constructor(
     private entrepriseService: EntrepriseService,
     private notificationService: NotificationService,
-    private userService: UserService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -68,10 +66,7 @@ export class Entreprise implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.loading = false;
-        if (isAuthError(error)) {
-          this.userService.logout();
-          return;
-        }
+        if (isAuthError(error)) return; // session expirée : gérée par l'intercepteur
         this.entreprise = null;
         // Seule une 404 signifie "aucune fiche entreprise" ; sinon on affiche l'erreur
         if (error.status !== 404) {
@@ -132,10 +127,7 @@ export class Entreprise implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         this.saving = false;
-        if (isAuthError(error)) {
-          this.userService.logout();
-          return;
-        }
+        if (isAuthError(error)) return; // session expirée : gérée par l'intercepteur
         this.notificationService.error(
           'Erreur',
           apiErrorMessage(error, "Une erreur est survenue lors de l'enregistrement.", FIELD_LABELS)

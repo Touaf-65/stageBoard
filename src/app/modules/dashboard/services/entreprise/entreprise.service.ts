@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_CONFIG } from '../../../../core/constants/api.config';
@@ -24,34 +24,24 @@ export class EntrepriseService {
 
   private apiUrl = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.ENTREPRISE.BASE}`;
 
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('authToken');
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    });
-  }
 
   getEntreprise(): Observable<EntrepriseModel> {
     return this.http.get<EntrepriseModel>(
-      this.apiUrl,
-      { headers: this.getAuthHeaders() }
+      this.apiUrl
     );
   }
 
   createEntreprise(data: EntrepriseRequest): Observable<{ msg: string; id: number }> {
     return this.http.post<{ msg: string; id: number }>(
       this.apiUrl,
-      data,
-      { headers: this.getAuthHeaders() }
+      data
     );
   }
 
   updateEntreprise(id: number, data: EntrepriseRequest): Observable<{ msg: string }> {
     return this.http.put<{ msg: string }>(
       `${this.apiUrl}${id}`,
-      data,
-      { headers: this.getAuthHeaders() }
+      data
     );
   }
 

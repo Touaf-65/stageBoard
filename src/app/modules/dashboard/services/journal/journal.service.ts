@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { API_CONFIG } from '../../../../core/constants/api.config';
 
@@ -29,33 +29,19 @@ export class JournalService {
   private apiUrl = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.JOURNAL.BASE}`;
   constructor(private http: HttpClient) {}
 
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      throw new Error('Token d\'authentification manquant');
-    }
-    
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-    return headers;
-  }
-
   getJournals(): Observable<JournalModel[]> {
-    return this.http.get<JournalModel[]>(this.apiUrl, { headers: this.getAuthHeaders() });
+    return this.http.get<JournalModel[]>(this.apiUrl);
   }
 
   createJournal(journalData: CreateJournalRequest): Observable<JournalModel> {
-    return this.http.post<JournalModel>(this.apiUrl, journalData, { headers: this.getAuthHeaders() });
+    return this.http.post<JournalModel>(this.apiUrl, journalData);
   }
 
   updateJournal(id: number, journalData: CreateJournalRequest): Observable<JournalModel> {
-    return this.http.put<JournalModel>(`${this.apiUrl}${id}`, journalData, { headers: this.getAuthHeaders() });
+    return this.http.put<JournalModel>(`${this.apiUrl}${id}`, journalData);
   }
 
   deleteJournal(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}${id}`, { headers: this.getAuthHeaders() });
+    return this.http.delete<void>(`${this.apiUrl}${id}`);
   }
 }

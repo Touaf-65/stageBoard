@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { API_CONFIG } from '../../../../core/constants/api.config';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface EcheanceModel {
@@ -27,35 +27,20 @@ export class EcheanceService {
   
   constructor (private http: HttpClient) {}
 
-    private getAuthHeaders(): HttpHeaders{
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      throw new Error('Token d\'authentification manquant');
-    }
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
-
-    return headers;
-  }
-
   getEcheances (): Observable<EcheanceModel[]> {
-    return this.http.get<EcheanceModel[]>(this.echeanceBase_apiUrl, { headers: this.getAuthHeaders() });
+    return this.http.get<EcheanceModel[]>(this.echeanceBase_apiUrl);
   }
 
   createEcheance (echeanceData: CreateEcheanceRequest): Observable<EcheanceModel> {
-    return this.http.post<EcheanceModel>(this.echeanceBase_apiUrl, echeanceData, { headers: this.getAuthHeaders() });
+    return this.http.post<EcheanceModel>(this.echeanceBase_apiUrl, echeanceData);
   }
 
   updateEcheance (id: number, echeanceData: CreateEcheanceRequest): Observable<EcheanceModel> {
-    return this.http.put<EcheanceModel>(`${this.echeanceBase_apiUrl}${id}`, echeanceData, { headers: this.getAuthHeaders() });
+    return this.http.put<EcheanceModel>(`${this.echeanceBase_apiUrl}${id}`, echeanceData);
   }
 
   deleteEcheance (id: number): Observable<void> {
-    return this.http.delete<void>(`${this.echeanceBase_apiUrl}${id}`, { headers: this.getAuthHeaders() });
+    return this.http.delete<void>(`${this.echeanceBase_apiUrl}${id}`);
   }
 
 }

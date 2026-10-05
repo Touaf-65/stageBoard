@@ -1,45 +1,40 @@
-import { Injectable } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor,
-  HttpResponse,
-  HttpErrorResponse
-} from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-import { Router } from '@angular/router';
-import { UserService } from '../modules/authentication/services/user/user.service';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { catchError, throwError } from 'rxjs';
 import { API_CONFIG } from '../core/constants/api.config';
+import { UserService } from '../modules/authentication/services/user/user.service';
+import { NotificationService } from '../shared/components/notification/notification.service';
+import { isAuthError } from '../shared/utils/api-error';
 
-@Injectable()
-export class InterceptorInterceptor implements HttpInterceptor {
+// Routes où un 401 signifie "identifiants/lien invalides", pas "session expirée"
+const PUBLIC_AUTH_ENDPOINTS = ['/auth/login', '/auth/register', '/auth/reset-password', '/auth/logout'];
 
-  PUBLIC_URL={
-    login:`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.AUTH.LOGIN}`
+/**
+ * - Ajoute le token JWT aux requêtes vers l'API.
+ * - Session expirée ou token invalide (401/422) : déconnexion et retour à la connexion.
+ *   Le 403 n'est pas concerné : l'API l'utilise pour "ressource d'un autre utilisateur".
+ */
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  if (!req.url.startsWith(API_CONFIG.BASE_URL)) {
+    return next(req);
   }
-  constructor(private router:Router,private userService:UserService) {}
 
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    if(!(request.url.includes(this.PUBLIC_URL.login))){
-      const authToken= localStorage.getItem('authToken')!;
-      const authReq=request.clone({
-        headers:request.headers.set('Authorization',`Bearer ${authToken}`)
-      });
-      return this.handleRequest(authReq,next);
-    }
-    return this.handleRequest(request,next);
-  }
-  handleRequest(req:HttpRequest<unknown>,next:HttpHandler):Observable<HttpEvent<unknown>>{
-    return next.handle(req).pipe(tap((event:HttpEvent<unknown>)=>{
-      if(event instanceof HttpResponse){
-        
+  const token = localStorage.getItem('authToken');
+  const authReq = token && !req.headers.has('Authorization')
+    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+    : req;
+
+  const isPublic = PUBLIC_AUTH_ENDPOINTS.some(endpoint => req.url.includes(endpoint));
+  const userService = inject(UserService);
+  const notificationService = inject(NotificationService);
+
+  return next(authReq).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (!isPublic && isAuthError(error) && userService.getConnectedUser()?.email) {
+        notificationService.warning('Session expirée', 'Veuillez vous reconnecter.');
+        userService.logout(false);
       }
-    },(error:any)=>{
-      if(error instanceof HttpErrorResponse && error.status===401 || error.status===403){
-        this.userService.logout(); 
-        this.router.navigate(['/auth/sign-in']);
-      }
-    }))
-  }
-}
+      return throwError(() => error);
+    })
+  );
+};

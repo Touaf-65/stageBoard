@@ -17,10 +17,13 @@
       </div>
       <div class="ml-3 overflow-hidden">
         <div *ngIf="userService.getConnectedUser() as user" class="text-sm font-semibold text-foreground">
-          {{ (user.first_name | titlecase) ?? 'Utilisateur' }} {{ (user.last_name | uppercase) ?? '' }}
+          <ng-container *ngIf="user.prenom || user.nom; else anonyme">
+            {{ user.prenom | titlecase }} {{ user.nom | uppercase }}
+          </ng-container>
+          <ng-template #anonyme>Utilisateur</ng-template>
         </div>
         <p class="truncate text-ellipsis text-xs font-medium text-muted-foreground">
-          {{ userService.getConnectedUser()?.email || 'Email non disponible' }}
+          {{ userService.getConnectedUser().email || 'Email non disponible' }}
         </p>
       </div>
     </div>

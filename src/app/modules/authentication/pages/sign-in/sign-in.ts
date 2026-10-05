@@ -4,7 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SvgIconComponent } from 'angular-svg-icon';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
-import { UserService } from '../../services/user/user.service';
+import { LoginResponse, UserService } from '../../services/user/user.service';
 import { NotificationService } from '../../../../shared/components/notification/notification.service';
 import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
 import { timer } from 'rxjs';
@@ -49,19 +49,15 @@ export class SignIn implements OnInit {
   login_user() {
     this.loading = true;
     const observer = {
-      next: (data: any) => {
-        this.loading = true;
-        this.userService.setAccesToken(data);
-        this.userService.getConnectedUserByEmail(this.email).subscribe(user => {
-            this.userService.setConnectedUser(user);
-            this.notificationService.success(
-              'Connexion réussie',
-              `Bienvenue, ${user?.email || 'utilisateur'} !`
-            );
-            timer(2000).subscribe(() => {
-              this.router.navigate(['/dashboard']);
-            });
-          });
+      next: (data: LoginResponse) => {
+        this.userService.startSession(data);
+        this.notificationService.success(
+          'Connexion réussie',
+          `Bienvenue, ${data.email} !`
+        );
+        timer(2000).subscribe(() => {
+          this.router.navigate(['/dashboard']);
+        });
       },
       error: (error: any) => {
         this.loading = false;

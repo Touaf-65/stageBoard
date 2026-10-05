@@ -3,7 +3,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { CanActivate, Router, UrlTree } from '@angular/router';
 import { ProfileService } from '../../../modules/dashboard/services/profile/profile.service';
 import { EntrepriseService } from '../../../modules/dashboard/services/entreprise/entreprise.service';
-import { UserService } from '../../../modules/authentication/services/user/user.service';
 import { isAuthError } from '../../../shared/utils/api-error';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -27,7 +26,6 @@ export class ProfileCompleteGuard implements CanActivate {
   constructor(
     private profileService: ProfileService,
     private entrepriseService: EntrepriseService,
-    private userService: UserService,
     private router: Router
   ) {}
 
@@ -37,9 +35,8 @@ export class ProfileCompleteGuard implements CanActivate {
       entreprise: settle(this.entrepriseService.getEntreprise())
     }).pipe(
       map(({ profile, entreprise }) => {
-        // Session expirée ou token invalide : retour à la connexion
+        // Session expirée ou token invalide : l'intercepteur ramène à la connexion
         if (isAuthError(profile.error) || isAuthError(entreprise.error)) {
-          this.userService.logout();
           return false;
         }
 

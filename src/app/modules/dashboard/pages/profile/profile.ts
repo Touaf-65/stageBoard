@@ -79,14 +79,12 @@ export class Profile implements OnInit {
         this.profile = data;
         this.fillFields(data);
         this.loading = false;
+        this.syncConnectedUser(data);
         this.updateIncompleteAlert();
       },
       error: (error) => {
         this.loading = false;
-        if (isAuthError(error)) {
-          this.userService.logout();
-          return;
-        }
+        if (isAuthError(error)) return; // session expirée : gérée par l'intercepteur
         this.notificationService.error('Erreur', apiErrorMessage(error, 'Impossible de charger le profil'));
         this.cdr.detectChanges();
       }
@@ -105,6 +103,10 @@ export class Profile implements OnInit {
         this.updateIncompleteAlert();
       }
     });
+  }
+
+  private syncConnectedUser(p: ProfileModel): void {
+    this.userService.setConnectedUser({ id: p.id, email: p.email, nom: p.nom, prenom: p.prenom });
   }
 
   // L'alerte reflète l'état réel, pas les paramètres de l'URL (qui deviennent obsolètes)
@@ -158,8 +160,8 @@ export class Profile implements OnInit {
         this.saving = false;
         this.showIncompleteAlert = false;
 
-        // Garde l'email affiché dans la navbar à jour
-        this.userService.setConnectedUser({ ...this.userService.getConnectedUser(), email: data.email });
+        // Garde le nom et l'email affichés dans la navbar à jour
+        this.syncConnectedUser(data);
 
         this.notificationService.success(
           'Profil mis à jour',
