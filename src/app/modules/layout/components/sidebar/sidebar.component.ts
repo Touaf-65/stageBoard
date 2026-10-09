@@ -23,6 +23,7 @@ export class SidebarComponent implements OnInit{
 
   }
   appJson:any = {
+    displayName: "StageBoard",
     version: "0.0.0",
   };
 

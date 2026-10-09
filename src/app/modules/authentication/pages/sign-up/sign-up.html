@@ -1,8 +1,8 @@
 <app-notifications></app-notifications>
 <form class="my-10 space-y-6" (ngSubmit)="onSubmit($event)">
   <div class="text-center">
-    <h2 class="mb-1 text-3xl font-semibold text-foreground">Create Account <span class="text-primary">!</span></h2>
-    <p class="text-sm text-muted-foreground">Enter your information to create your account</p>
+    <h2 class="mb-1 text-3xl font-semibold text-foreground">Créer un compte</h2>
+    <p class="text-sm text-muted-foreground">Renseignez votre email et choisissez un mot de passe.</p>
   </div>
 
   <div class="space-y-3 text-left">
@@ -21,12 +21,12 @@
         <label
           for="email"
           class="absolute top-2 left-1 z-10 origin-left -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
-          Email address
+          Email
         </label>
       </div>
 
       <div *ngIf="submitted && !email" class="is__invalid-error">
-        <div>Required field</div>
+        <div>Champ obligatoire</div>
       </div>
     </div>
 
@@ -45,7 +45,7 @@
         <label
           for="password"
           class="absolute top-2 left-1 z-10 origin-left -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
-          Password
+          Mot de passe
         </label>
         <span class="absolute top-2.5 right-5 cursor-pointer text-muted-foreground" (click)="togglePasswordTextType()">
           <svg-icon
@@ -61,7 +61,7 @@
 
 
       <div *ngIf="submitted && !password" class="is__invalid-error">
-        <div>Required field</div>
+        <div>Champ obligatoire</div>
       </div>
     </div>
 
@@ -80,23 +80,22 @@
         <label
           for="confirm-password"
           class="absolute top-2 left-1 z-10 origin-left -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
-          Confirm password
+          Confirmer le mot de passe
         </label>
       </div>
 
       <div *ngIf="submitted && !confirmPassword" class="is__invalid-error">
-        <div>Required field</div>
+        <div>Champ obligatoire</div>
       </div>
     </div>
   </div>
 
   <div class="mb-2 flex items-center justify-between space-x-3">
     <div class="flex items-center">
-      <input type="checkbox" id="remember-me">
-      <label for="remember-me" class="ml-2 block text-sm text-muted-foreground"> Remember me </label>
+
     </div>
     <app-button routerLink="/auth/sign-in" type="button" impact="none" tone="primary" shape="rounded" size="small">
-      Already have an account?
+      Déjà un compte ? Se connecter
     </app-button>
   </div>
 
@@ -112,7 +111,7 @@
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
       </span>
-      {{ loading ? 'Inscription...' : 'Create account' }}
+      {{ loading ? 'Inscription...' : 'Créer mon compte' }}
     </button>
   </div>
 </form>
