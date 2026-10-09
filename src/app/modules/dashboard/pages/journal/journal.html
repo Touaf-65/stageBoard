@@ -62,7 +62,7 @@
             </div>
 
             <button type="button" *ngFor="let journal of filteredJournals" (click)="openView(journal)"
-                class="card flex w-full items-center gap-4 p-4 text-left transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                class="card flex w-full items-center gap-4 p-4 text-left transition-shadow hover:shadow-md focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary">
 
                 <!-- Date (une seule fois par ligne) -->
                 <div class="w-12 shrink-0 rounded-lg bg-primary/10 py-1.5 text-center text-primary">
@@ -73,7 +73,7 @@
                 <!-- Texte tronqué : un contenu long ne déborde plus de la carte -->
                 <div class="min-w-0 flex-1">
                     <p class="truncate font-medium text-foreground">{{ journal.titre }}</p>
-                    <p *ngIf="journal.description" class="line-clamp-2 break-words text-sm text-muted-foreground">
+                    <p *ngIf="journal.description" class="line-clamp-2 wrap-break-word text-sm text-muted-foreground">
                         {{ journal.description }}
                     </p>
                 </div>
@@ -90,7 +90,7 @@
         <!-- Recréé à chaque ouverture : les champs repartent des valeurs du composant -->
         <ng-container *ngIf="modalCreateOpen">
             <div class="flex flex-col gap-4 sm:flex-row">
-                <div class="form__group sm:flex-[2]">
+                <div class="form__group sm:flex-2">
                     <label for="titre">Titre</label>
                     <input type="text" id="titre" [(ngModel)]="titre" class="form__input">
                 </div>
@@ -132,7 +132,7 @@
         <!-- Recréé à chaque ouverture : les champs repartent des valeurs du composant -->
         <ng-container *ngIf="modalEditOpen">
             <div class="flex flex-col gap-4 sm:flex-row">
-                <div class="form__group sm:flex-[2]">
+                <div class="form__group sm:flex-2">
                     <label for="editTitre">Titre</label>
                     <input type="text" id="editTitre" [(ngModel)]="editTitre" class="form__input">
                 </div>
@@ -171,8 +171,8 @@
 
     <app-modal [isOpen]="modalViewOpen" [title]="selectedJournal?.titre || 'Entrée du journal'" [size]="'lg'" (close)="closeView()">
 
-        <!-- whitespace-pre-line : garde les retours à la ligne saisis ; break-words : pas de débordement -->
-        <div *ngIf="selectedJournal" class="space-y-4 break-words text-sm">
+        <!-- whitespace-pre-line : garde les retours à la ligne saisis ; wrap-break-word : pas de débordement -->
+        <div *ngIf="selectedJournal" class="space-y-4 wrap-break-word text-sm">
 
             <p class="badge-primary">{{ selectedJournal.date_entree | date }}</p>
 
@@ -220,7 +220,7 @@
             <div class="min-w-0 text-sm">
                 <p class="text-foreground">
                     Voulez-vous vraiment supprimer l'entrée
-                    <span class="break-words font-semibold">« {{ journalToDelete?.titre }} »</span> ?
+                    <span class="wrap-break-word font-semibold">« {{ journalToDelete?.titre }} »</span> ?
                 </p>
                 <p class="mt-1 text-muted-foreground">Cette action est définitive.</p>
             </div>

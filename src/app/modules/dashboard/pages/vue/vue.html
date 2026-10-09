@@ -120,7 +120,7 @@
                         </div>
                         <span [ngClass]="badgeEcheanceClass">{{ delaiEcheanceLabel }}</span>
                     </div>
-                    <p class="text-sm text-muted-foreground mb-4 line-clamp-2 break-words">{{ prochaineEcheance.description }}</p>
+                    <p class="text-sm text-muted-foreground mb-4 line-clamp-2 wrap-break-word">{{ prochaineEcheance.description }}</p>
                 </ng-container>
 
                 <ng-template #noEcheance>
@@ -143,7 +143,7 @@
                     <p class="text-sm text-muted-foreground mt-1 mb-3">
                         {{ dernierJournal.date_entree | date }}
                     </p>
-                    <p class="text-sm text-muted-foreground mb-4 line-clamp-2 break-words">{{ dernierJournal.description }}</p>
+                    <p class="text-sm text-muted-foreground mb-4 line-clamp-2 wrap-break-word">{{ dernierJournal.description }}</p>
                 </ng-container>
 
                 <ng-template #noJournal>

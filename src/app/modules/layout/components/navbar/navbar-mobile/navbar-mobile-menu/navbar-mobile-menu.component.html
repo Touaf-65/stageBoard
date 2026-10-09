@@ -28,11 +28,11 @@
         <ng-template #parentMenu let-item="item">
           <div
             routerLink="{{ item.route }}"
-            class="flex h-9 cursor-pointer items-center justify-start rounded hover:bg-card">
+            class="flex h-9 cursor-pointer items-center justify-start rounded-sm hover:bg-card">
             <a
               routerLinkActive="text-primary"
               (click)="closeMenu()"
-              class="ml-10 truncate text-xs font-semibold tracking-wide focus:outline-none">
+              class="ml-10 truncate text-xs font-semibold tracking-wide focus:outline-hidden">
               {{ item.label }}
             </a>
           </div>
@@ -40,8 +40,8 @@
 
         <!-- Workaround:: Disable routerLink -->
         <ng-template #childMenu let-item="item">
-          <div class="flex h-9 cursor-pointer items-center justify-start rounded hover:bg-card">
-            <a class="ml-10 truncate text-xs font-semibold tracking-wide focus:outline-none">
+          <div class="flex h-9 cursor-pointer items-center justify-start rounded-sm hover:bg-card">
+            <a class="ml-10 truncate text-xs font-semibold tracking-wide focus:outline-hidden">
               {{ item.label }}
             </a>
           </div>

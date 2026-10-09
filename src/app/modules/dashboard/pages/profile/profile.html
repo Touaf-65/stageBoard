@@ -51,7 +51,7 @@
             {{ initiales }}
           </div>
           <div class="w-full min-w-0">
-            <p class="break-words text-lg font-semibold text-foreground">{{ profile?.prenom }} {{ profile?.nom }}</p>
+            <p class="wrap-break-word text-lg font-semibold text-foreground">{{ profile?.prenom }} {{ profile?.nom }}</p>
             <p class="truncate text-sm text-muted-foreground" [title]="profile?.email">{{ profile?.email }}</p>
           </div>
           <span [ngClass]="isProfileComplete ? 'badge-success' : 'badge-warning'">
@@ -92,11 +92,11 @@
             <dl class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
               <div>
                 <dt class="text-xs text-muted-foreground">Prénom</dt>
-                <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ profile?.prenom || '—' }}</dd>
+                <dd class="mt-0.5 wrap-break-word text-sm font-medium text-foreground">{{ profile?.prenom || '—' }}</dd>
               </div>
               <div>
                 <dt class="text-xs text-muted-foreground">Nom</dt>
-                <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ profile?.nom || '—' }}</dd>
+                <dd class="mt-0.5 wrap-break-word text-sm font-medium text-foreground">{{ profile?.nom || '—' }}</dd>
               </div>
               <div class="sm:col-span-2">
                 <dt class="text-xs text-muted-foreground">Email</dt>
@@ -110,23 +110,23 @@
             <dl class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
               <div>
                 <dt class="text-xs text-muted-foreground">Filière</dt>
-                <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ profile?.filiere || '—' }}</dd>
+                <dd class="mt-0.5 wrap-break-word text-sm font-medium text-foreground">{{ profile?.filiere || '—' }}</dd>
               </div>
               <div>
                 <dt class="text-xs text-muted-foreground">Année</dt>
-                <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ profile?.annee || '—' }}</dd>
+                <dd class="mt-0.5 wrap-break-word text-sm font-medium text-foreground">{{ profile?.annee || '—' }}</dd>
               </div>
               <div class="sm:col-span-2">
                 <dt class="text-xs text-muted-foreground">Type de stage</dt>
-                <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ profile?.type_stage || '—' }}</dd>
+                <dd class="mt-0.5 wrap-break-word text-sm font-medium text-foreground">{{ profile?.type_stage || '—' }}</dd>
               </div>
               <div>
                 <dt class="text-xs text-muted-foreground">Date de début</dt>
-                <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ (profile?.date_debut | date) || '—' }}</dd>
+                <dd class="mt-0.5 wrap-break-word text-sm font-medium text-foreground">{{ (profile?.date_debut | date) || '—' }}</dd>
               </div>
               <div>
                 <dt class="text-xs text-muted-foreground">Date de fin</dt>
-                <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ (profile?.date_fin | date) || '—' }}</dd>
+                <dd class="mt-0.5 wrap-break-word text-sm font-medium text-foreground">{{ (profile?.date_fin | date) || '—' }}</dd>
               </div>
             </dl>
           </section>

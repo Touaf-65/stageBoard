@@ -94,7 +94,7 @@
             <app-icon name="building-office" class="h-7 w-7" />
           </div>
           <div class="min-w-0">
-            <p class="break-words text-lg font-semibold text-foreground">{{ entreprise.nom }}</p>
+            <p class="wrap-break-word text-lg font-semibold text-foreground">{{ entreprise.nom }}</p>
             <p class="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
               <app-icon name="briefcase" class="h-4 w-4" />
               {{ entreprise.secteur || "Secteur d'activité non renseigné" }}
@@ -108,7 +108,7 @@
             <app-icon name="map-pin" class="mt-0.5 h-5 w-5 text-muted-foreground" />
             <div class="min-w-0">
               <dt class="text-xs text-muted-foreground">Adresse</dt>
-              <dd class="mt-0.5 break-words text-sm font-medium text-foreground">{{ entreprise.adresse || '—' }}</dd>
+              <dd class="mt-0.5 wrap-break-word text-sm font-medium text-foreground">{{ entreprise.adresse || '—' }}</dd>
             </div>
           </div>
           <div class="flex items-start gap-3">
@@ -137,7 +137,7 @@
             {{ initiales }}
           </div>
           <div class="min-w-0">
-            <p class="break-words font-semibold text-foreground">{{ entreprise.nom_tuteur || 'Tuteur non renseigné' }}</p>
+            <p class="wrap-break-word font-semibold text-foreground">{{ entreprise.nom_tuteur || 'Tuteur non renseigné' }}</p>
             <p class="break-all text-sm text-muted-foreground">{{ entreprise.email_tuteur || 'Email non renseigné' }}</p>
           </div>
         </div>

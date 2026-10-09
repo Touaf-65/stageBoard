@@ -27,10 +27,10 @@
         <ng-template #parentMenu let-item="item">
           <div
             routerLink="{{ item.route }}"
-            class="flex h-9 cursor-pointer items-center justify-start rounded text-muted-foreground hover:bg-card hover:text-foreground">
+            class="flex h-9 cursor-pointer items-center justify-start rounded-sm text-muted-foreground hover:bg-card hover:text-foreground">
             <a
               routerLinkActive="text-primary"
-              class="ml-10 truncate text-xs font-semibold tracking-wide focus:outline-none">
+              class="ml-10 truncate text-xs font-semibold tracking-wide focus:outline-hidden">
               {{ item.label }}
             </a>
           </div>
@@ -38,9 +38,9 @@
 
         <!-- Workaround:: Disable routerLink -->
         <ng-template #childMenu let-item="item">
-          <div class="flex h-9 cursor-pointer items-center justify-start rounded hover:bg-card">
+          <div class="flex h-9 cursor-pointer items-center justify-start rounded-sm hover:bg-card">
             <a
-              class="ml-10 truncate text-xs font-semibold tracking-wide text-muted-foreground focus:outline-none group-hover:text-foreground">
+              class="ml-10 truncate text-xs font-semibold tracking-wide text-muted-foreground focus:outline-hidden group-hover:text-foreground">
               {{ item.label }}
             </a>
           </div>
@@ -57,7 +57,7 @@
         <!-- Tooltip -->
         <div class="fixed w-full" *ngIf="!menuService.showSideBar">
           <span
-            class="z-1 absolute left-14 -top-[34px] w-auto min-w-max origin-left scale-0 rounded-md bg-foreground p-2 text-xs font-bold text-background shadow-md transition-all duration-200 group-hover:scale-100">
+            class="z-1 absolute left-14 top-[-34px] w-auto min-w-max origin-left scale-0 rounded-md bg-foreground p-2 text-xs font-bold text-background shadow-md transition-all duration-200 group-hover:scale-100">
             {{ item.label }}
           </span>
         </div>

@@ -9,7 +9,7 @@
       <div class="flex items-center" *ngIf="menuService.showSideBar">
         <a
           (click)="toggleSidebar()"
-          class="flex cursor-pointer items-center justify-center rounded bg-primary p-2 focus:outline-none focus:ring-1">
+          class="flex cursor-pointer items-center justify-center rounded-sm bg-primary p-2 focus:outline-hidden focus:ring-1">
           <img src="/assets/images/9963629.jpg" class="w-10 h-6"/> 
         </a>
         <b class="ml-1 pl-2 text-sm font-bold text-foreground">
@@ -18,7 +18,7 @@
       </div>
       <button
         (click)="toggleSidebar()"
-        class="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded text-muted-foreground/50 transition-all duration-200 focus:outline-none hover:text-muted-foreground"
+        class="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-sm text-muted-foreground/50 transition-all duration-200 focus:outline-hidden hover:text-muted-foreground"
         [ngClass]="{ 'rotate-180': !menuService.showSideBar }">
         <svg-icon src="/assets/icons/heroicons/solid/chevron-double-left.svg"> </svg-icon>
       </button>
