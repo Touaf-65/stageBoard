@@ -68,7 +68,6 @@ export class Journal implements OnInit {
   }
 
   loadJournals(): void {
-    const token = localStorage.getItem('authToken');
     this.journalService.getJournals().subscribe({
       next: (data) => {
         this.journals = data;

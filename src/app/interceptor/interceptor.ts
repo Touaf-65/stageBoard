@@ -10,29 +10,27 @@ import { isAuthError } from '../shared/utils/api-error';
 const PUBLIC_AUTH_ENDPOINTS = ['/auth/login', '/auth/register', '/auth/reset-password', '/auth/logout'];
 
 /**
- * - Ajoute le token JWT aux requêtes vers l'API.
- * - Session expirée ou token invalide (401/422) : déconnexion et retour à la connexion.
- *   Le 403 n'est pas concerné : l'API l'utilise pour "ressource d'un autre utilisateur".
+ * Session expirée ou token invalide (401/422) : déconnexion et retour à la connexion.
+ * Le 403 n'est pas concerné : l'API l'utilise pour "ressource d'un autre utilisateur".
+ *
+ * Plus d'en-tête Authorization à ajouter : le token est dans un cookie HttpOnly que le
+ * navigateur envoie lui-même aux appels /api (même origine). L'en-tête CSRF est ajouté
+ * par Angular (withXsrfConfiguration dans app.config.ts).
  */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   if (!req.url.startsWith(API_CONFIG.BASE_URL)) {
     return next(req);
   }
 
-  const token = localStorage.getItem('authToken');
-  const authReq = token && !req.headers.has('Authorization')
-    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-    : req;
-
   const isPublic = PUBLIC_AUTH_ENDPOINTS.some(endpoint => req.url.includes(endpoint));
   const userService = inject(UserService);
   const notificationService = inject(NotificationService);
 
-  return next(authReq).pipe(
+  return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       if (!isPublic && isAuthError(error) && userService.getConnectedUser()?.email) {
         notificationService.warning('Session expirée', 'Veuillez vous reconnecter.');
-        userService.logout(false);
+        userService.logout();
       }
       return throwError(() => error);
     })
