@@ -73,17 +73,27 @@ export class UserService {
   }
 
   /**
-   * Termine la session et revient à la connexion. L'appel à /auth/logout est toujours
-   * fait : seul le serveur peut effacer le cookie HttpOnly (et il révoque le token s'il
-   * est encore valide). Angular y joint l'en-tête CSRF (voir app.config.ts).
+   * Termine la session sans changer de page. L'appel à /auth/logout est toujours fait :
+   * seul le serveur peut effacer le cookie HttpOnly (et il révoque le token s'il est
+   * encore valide). Angular y joint l'en-tête CSRF (voir app.config.ts).
    */
-  logout() {
+  endSession() {
     this.http.post(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.AUTH.LOGOUT}`, {})
       .subscribe({ error: () => {} });
 
     localStorage.removeItem(LEGACY_TOKEN_KEY);
     localStorage.removeItem('connectedUser');
     this.userChanged$.next();
+  }
+
+  /**
+   * Termine la session et revient à la connexion.
+   * À ne pas appeler depuis la page de connexion elle-même (utiliser endSession) :
+   * relancer une navigation vers /auth/sign-in pendant qu'elle est en cours peut
+   * annuler la navigation initiale et laisser la page blanche.
+   */
+  logout() {
+    this.endSession();
     this.router.navigate(['/auth/sign-in']);
   }
 

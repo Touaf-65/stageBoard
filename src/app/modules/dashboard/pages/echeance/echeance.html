@@ -63,9 +63,10 @@
                 </div>
             </div>
 
+            <!-- Badge de largeur fixe : la colonne des dates reste alignée quel que soit le statut -->
             <div class="hidden shrink-0 items-center gap-4 sm:flex">
                 <span class="text-sm text-muted-foreground">{{ e.date_limite | date }}</span>
-                <span [ngClass]="statutBadge(e.statut)">{{ statutLabel(e.statut) }}</span>
+                <span class="w-24 justify-center" [ngClass]="statutBadge(e.statut)">{{ statutLabel(e.statut) }}</span>
             </div>
 
             <!-- Actions : menu rattaché à la ligne, aligné à droite -->

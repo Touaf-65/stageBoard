@@ -81,8 +81,9 @@ export class Journal implements OnInit {
 
   // "mai 2026" à partir de "2026-05-12" (T00:00:00 : interprété en heure locale)
   private periodeLabel(j: JournalModel): string {
-    return new Date(j.date_entree + 'T00:00:00')
+    const label = new Date(j.date_entree + 'T00:00:00')
       .toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    return label.charAt(0).toUpperCase() + label.slice(1); // "Octobre 2026"
   }
 
   buildPeriodes(): void {

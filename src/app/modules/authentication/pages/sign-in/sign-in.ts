@@ -33,7 +33,8 @@ export class SignIn implements OnInit {
   }
 
   ngOnInit() {
-    this.userService.logout();
+    // Session précédente terminée sans renaviguer : on est déjà en train d'ouvrir cette page
+    this.userService.endSession();
   }
 
   togglePasswordTextType() {

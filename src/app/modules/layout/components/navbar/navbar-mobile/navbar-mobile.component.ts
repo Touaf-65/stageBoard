@@ -1,5 +1,6 @@
 
-import {Component, OnInit, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import { SvgIconComponent } from 'angular-svg-icon';
 import {MenuService} from "../../../services/menu.service";
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -10,8 +11,8 @@ import { NavbarMobileMenuComponent } from './navbar-mobile-menu/navbar-mobile-me
   templateUrl: './navbar-mobile.component.html',
   styleUrls: ['./navbar-mobile.component.scss'],
   standalone: true,
-  imports: [CommonModule, RouterModule, NavbarMobileMenuComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  // SvgIconComponent importé : sans lui, <svg-icon> restait une balise vide (masqué par CUSTOM_ELEMENTS_SCHEMA)
+  imports: [CommonModule, RouterModule, NavbarMobileMenuComponent, SvgIconComponent],
 })
 export class NavbarMobileComponent implements OnInit{
   ngOnInit() {

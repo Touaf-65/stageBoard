@@ -15,10 +15,11 @@ export const authGuard: CanActivateFn = () => {
     return true;
   }
 
-  // Session expirée encore connue localement : on la termine proprement (cookie effacé)
+  // Session expirée encore connue localement : on la termine (cookie effacé côté serveur).
+  // Redirection par UrlTree plutôt que router.navigate : lancer une navigation pendant
+  // une autre peut l'annuler et laisser la page blanche.
   if (userService.getConnectedUser().email) {
-    userService.logout();
-    return false;
+    userService.endSession();
   }
   return router.createUrlTree(['/auth/sign-in']);
 };

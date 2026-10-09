@@ -27,7 +27,7 @@
                 <div>
                     <label for="filtrePeriode" class="text-xs text-muted-foreground">Période</label>
                     <select id="filtrePeriode" [(ngModel)]="selectedPeriode" (ngModelChange)="applyFilters()"
-                        class="mt-1 text-sm capitalize">
+                        class="mt-1 text-sm">
                         <option value="">Toutes les périodes</option>
                         <option *ngFor="let p of periodes" [value]="p">{{ p }}</option>
                     </select>
@@ -197,7 +197,7 @@
             </div>
 
             <div class="form__actions">
-                <button class="btn-danger sm:mr-auto" (click)="askDeleteJournal()">
+                <button class="btn-danger-outline sm:mr-auto" (click)="askDeleteJournal()">
                     <app-icon name="trash" class="h-4 w-4" />
                     Supprimer
                 </button>

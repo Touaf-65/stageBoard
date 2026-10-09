@@ -5,7 +5,7 @@
     <span class="sr-only">Ouvrir le menu utilisateur</span>      
       <svg-icon appClickOutside
       (clickOutside)="isOpen = false"
-      class="rounded-md text-foreground" src="/assets/icons/heroicons/outline/client.svg" alt=""></svg-icon>
+      class="rounded-md text-foreground" src="/assets/icons/heroicons/outline/user-circle.svg" alt=""></svg-icon>
   </button>
   <!-- Dropdown -->
   <div
@@ -13,7 +13,7 @@
     class="absolute right-0 z-20 mt-2 w-60 origin-top-right transform rounded-md bg-background py-4 shadow-custom ring-1 ring-transparent transition focus:outline-hidden">
     <div class="flext-row flex items-center px-4 pb-4">
       <div class="w-10 shrink-0">
-        <svg-icon class="rounded-md text-foreground" src="/assets/icons/heroicons/outline/client.svg" alt=""></svg-icon>
+        <svg-icon class="rounded-md text-foreground" src="/assets/icons/heroicons/outline/user-circle.svg" alt=""></svg-icon>
       </div>
       <div class="ml-3 overflow-hidden">
         <div *ngIf="userService.getConnectedUser() as user" class="text-sm font-semibold text-foreground">
